@@ -1,1 +1,3 @@
 # Rubyst
+
+Rustで作るRuby

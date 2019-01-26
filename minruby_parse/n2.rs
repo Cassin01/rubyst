@@ -66,16 +66,23 @@ fn main() {
     let texts = String::from("1 + 2 + 3");
     let mut num = String::new();
     let mut tree = Tree::new();
+    let mut num_flag = true;
 
     for c in texts.chars() {
+        println!("{} {:?}", c, tree);
         if is_num(&c) {
+            num_flag = true;
             num.push(c);
         } else if is_space(&c) {
+            if num_flag {
+                tree = push_num(tree, num.clone());
+                num.clear();
+            }
+            num_flag = false;
         } else if is_operator_sums(&c) {
+            num_flag = false;
             tree = push_op(tree, c.to_string());
         } else {
-            tree = push_num(tree, num.clone());
-            num.clear();
         }
     }
     println!("{:?}", tree);

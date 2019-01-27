@@ -1,9 +1,18 @@
 use std::fmt;
 
-#[derive(Debug)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq)]
+enum Op<T> {
+    Nil,
+    Plus,
+    Minus,
+    Mult,
+    Divid,
+    Num(T)
+}
+
+#[derive(Debug, Clone)]
 struct Tree {
-    root: Option<String>,
+    root: Op<String>,
     left: Option<Box<Tree>>,
     right: Option<Box<Tree>>,
 }
@@ -15,42 +24,49 @@ impl fmt::Display for Tree {
 }
 
 impl Tree {
-  fn new(root: Option<String>) -> Tree {
+  fn new(root: Op<String>) -> Tree {
     Tree {
       root: root,
-      ..Default::default()
+      left: None,
+      right: None,
     }
   }
 
-  fn left(mut self, leaf: Tree) -> Self {
-    self.left = Some(Box::new(leaf));
+  fn left(mut self, leaf: Option<Box<Tree>>) -> Self {
+    self.left = leaf;
     self
   }
 
-  fn right(mut self, leaf: Tree) -> Self {
-    self.right = Some(Box::new(leaf));
+  fn right(mut self, leaf: Option<Box<Tree>>) -> Self {
+    self.right = leaf;
     self
   }
 
   fn root(mut self, root: String) -> Self {
-    self.root = Some(root);
+    self.root = match root.as_str() {
+        "*" => Op::Mult,
+        "/" => Op::Divid,
+        "+" => Op::Plus,
+        "-" => Op::Minus,
+        _   => panic!("not operator"),
+    };
     self
   }
 }
 
 fn is_num(c: &char) -> bool {
-        match c {
-            '1' => true,
-            '2' => true,
-            '3' => true,
-            '4' => true,
-            '5' => true,
-            '6' => true,
-            '7' => true,
-            '8' => true,
-            '9' => true,
-            _   => false
-        }
+    match c {
+        '1' => true,
+        '2' => true,
+        '3' => true,
+        '4' => true,
+        '5' => true,
+        '6' => true,
+        '7' => true,
+        '8' => true,
+        '9' => true,
+        _   => false
+    }
 }
 
 fn is_space(c: &char) -> bool {
@@ -68,30 +84,75 @@ fn is_operator_sums(c: &char) -> bool {
     }
 }
 
-fn push_num(tree: Tree, num: String) -> Tree {
-    if tree.root == None {
-        tree.right(Tree::new(Some(num)))
+fn is_operator_products(c: &char) -> bool {
+    match c {
+        '*' => true,
+        '/' => true,
+        _   => false,
+    }
+}
+
+fn enum_op(op: String) -> Op<String> {
+    match op.as_str() {
+        "*" => Op::Mult,
+        "/" => Op::Divid,
+        "+" => Op::Plus,
+        "-" => Op::Minus,
+        _   => panic!("not operator"),
+    }
+}
+
+impl Tree {
+    fn push_back(&mut self, value: String) {
+        // 最終要素探索関数.
+        fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
+            if let Some(ref mut _n) = *tree {
+                last_node(&mut _n.right)
+            }
+            else {
+                tree
+            }
+        }
+        let _node = last_node(&mut self.right);
+        *_node = Some(Box::new(Tree::new(Op::Num(value))));
+    }
+}
+
+fn push_num(mut tree: Tree, num: String) -> Tree {
+    if tree.root == Op::Nil {
+        tree.left(Some(Box::new(Tree::new(Op::Num(num)))))
     } else {
-        tree.left(Tree::new(Some(num)))
+        tree.push_back(num);
+        tree
     }
 }
 
 fn push_op(tree: Tree, op: String) -> Tree {
-    if tree.root == None {
+    if tree.root == Op::Nil {
         tree.root(op)
     } else {
-        Tree::new(Some(op)).right(tree)
+        Tree::new(enum_op(op)).left(Some(Box::new(tree)))
+    }
+}
+
+fn push_op_products(tree: Tree, op: String)
+    -> Tree {
+    let i = tree.clone();
+    match tree.root {
+        Op::Nil => tree.right(Some(Box::new(Tree::new(enum_op(op))))),
+        Op::Plus | Op::Minus => Tree::new(i.root).left(i.left).right(Some(Box::new(Tree::new(enum_op(op)).left(i.right)))),
+        Op::Mult | Op::Divid => i.left(Some(Box::new(Tree::new(enum_op(op))))),
+        _ => panic!("not operator"),
     }
 }
 
 
-fn main() {
-    let code = String::from("1 + 2 + 3");
+fn parser(code: String) -> Tree {
     let mut num = String::new();
     let mut num_flag = false;
 
     // Abstract syntax tree
-    let mut ast = Tree::new(None);
+    let mut ast = Tree::new(Op::Nil);
 
     for c in code.chars() {
         if is_num(&c) {
@@ -106,10 +167,47 @@ fn main() {
         } else if is_operator_sums(&c) {
             num_flag = false;
             ast = push_op(ast, c.to_string());
+        } else if is_operator_products(&c) {
+            num_flag = false;
+            ast = push_op_products(ast, c.to_string());
+        } else {
+            panic!("err {} is not supported", c);
         }
-        
     }
+    if num_flag {
+        ast = push_num(ast, num.clone());
+        num.clear();
+    }
+    ast
+}
 
+fn main() {
+    let code = String::from("1 + 2 + 3");
+    let ast = parser(code);
+
+    println!("{:?}", ast);
+
+    let code = String::from("1 + 2 * 3");
+    let ast = parser(code);
 
     println!("{:?}", ast);
 }
+
+
+/*
+Tree {
+        root: Plus,
+        left: Some(Tree {
+                root: Plus,
+                left: Some(Tree { root: Num("1"), left: None, right: None }), 
+                right: Some(Tree { root: Num("2"), left: None, right: None }) }),
+        right: Some(Tree { root: Num("3"), left: None,right: None }) }
+
+Tree {
+        root: Plus,
+        left: Some(Tree { root: Num("1"), left: None, right: None }),
+        right: Some(Tree {
+                    root: Mult,
+                    left: Some(Tree { root: Num("2"), left: None, right: None }),
+                    right: Some(Tree { root: Num("3"), left: None, right: None }) }) }
+*/

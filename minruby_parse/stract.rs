@@ -137,11 +137,10 @@ fn push_op(tree: Tree, op: String) -> Tree {
 
 fn push_op_products(tree: Tree, op: String)
     -> Tree {
-    let i = tree.clone();
     match tree.root {
-        Op::Nil => tree.right(Some(Box::new(Tree::new(enum_op(op))))),
-        Op::Plus | Op::Minus => Tree::new(i.root).left(i.left).right(Some(Box::new(Tree::new(enum_op(op)).left(i.right)))),
-        Op::Mult | Op::Divid => i.left(Some(Box::new(Tree::new(enum_op(op))))),
+        Op::Nil => tree.root(op),
+        Op::Plus | Op::Minus => Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+        Op::Mult | Op::Divid => Tree::new(enum_op(op)).left(Some(Box::new(tree))),
         _ => panic!("not operator"),
     }
 }
@@ -187,27 +186,8 @@ fn main() {
 
     println!("{:?}", ast);
 
-    let code = String::from("1 + 2 * 3");
+    let code = String::from("1 * 2 + 3");
     let ast = parser(code);
 
     println!("{:?}", ast);
 }
-
-
-/*
-Tree {
-        root: Plus,
-        left: Some(Tree {
-                root: Plus,
-                left: Some(Tree { root: Num("1"), left: None, right: None }), 
-                right: Some(Tree { root: Num("2"), left: None, right: None }) }),
-        right: Some(Tree { root: Num("3"), left: None,right: None }) }
-
-Tree {
-        root: Plus,
-        left: Some(Tree { root: Num("1"), left: None, right: None }),
-        right: Some(Tree {
-                    root: Mult,
-                    left: Some(Tree { root: Num("2"), left: None, right: None }),
-                    right: Some(Tree { root: Num("3"), left: None, right: None }) }) }
-*/

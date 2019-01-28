@@ -36,14 +36,14 @@ pub fn is_operator_products(c: &char) -> bool {
     }
 }
 
-fn is_first_bracket(c: &char) -> bool {
+pub fn is_first_bracket(c: &char) -> bool {
     match c {
         '(' => true,
         _   => false,
     }
 }
 
-fn is_second_bracket(c: &char) -> bool {
+pub fn is_second_bracket(c: &char) -> bool {
     match c {
         ')' => true,
         _   => false,

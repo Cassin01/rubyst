@@ -21,6 +21,15 @@ fn push_num(mut tree: Tree, num: String) -> Tree {
     }
 }
 
+fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
+    if tree.root == Op::Nil {
+        tree.left(Some(Box::new(insert_tree)))
+    } else {
+        tree.push_back_tree(insert_tree);
+        tree
+    }
+}
+
 fn push_op(tree: Tree, op: String) -> Tree {
     if tree.root == Op::Nil {
         tree.root(op)
@@ -43,29 +52,37 @@ fn push_op_products(tree: Tree, op: String)
 
 pub fn parser(code: String) -> Tree {
     let mut num = String::new();
+    let mut code_in_brackets = String::new();
     let mut num_flag = false;
+    let mut not_brackets = true;
 
     // Abstract syntax tree
     let mut ast = Tree::new(Op::Nil);
 
     for c in code.chars() {
-        if is::is_num(&c) {
+        if is::is_num(&c) && not_brackets {
             num_flag = true;
             num.push(c);
-        } else if is::is_space(&c) {
+        } else if is::is_space(&c) && not_brackets {
             if num_flag {
                 ast = push_num(ast, num.clone());
                 num.clear();
                 num_flag = false;
             }
-        } else if is::is_operator_sums(&c) {
+        } else if is::is_operator_sums(&c) && not_brackets{
             num_flag = false;
             ast = push_op(ast, c.to_string());
-        } else if is::is_operator_products(&c) {
+        } else if is::is_operator_products(&c) && not_brackets {
             num_flag = false;
             ast = push_op_products(ast, c.to_string());
+        } else if is::is_first_bracket(&c) && not_brackets {
+            not_brackets = false;
+        } else if is::is_second_bracket(&c) {
+            ast = push_tree(ast, parser(code_in_brackets.clone()));
+            code_in_brackets.clear();
+            not_brackets = true;
         } else {
-            panic!("err {} is not supported", c);
+            code_in_brackets.push(c);
         }
     }
     if num_flag {

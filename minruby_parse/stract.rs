@@ -24,34 +24,34 @@ impl fmt::Display for Tree {
 }
 
 impl Tree {
-  fn new(root: Op<String>) -> Tree {
-    Tree {
-      root: root,
-      left: None,
-      right: None,
+    fn new(root: Op<String>) -> Tree {
+        Tree {
+            root: root,
+            left: None,
+            right: None,
+        }
     }
-  }
 
-  fn left(mut self, leaf: Option<Box<Tree>>) -> Self {
-    self.left = leaf;
-    self
-  }
+    fn left(mut self, leaf: Option<Box<Tree>>) -> Self {
+        self.left = leaf;
+        self
+    }
 
-  fn right(mut self, leaf: Option<Box<Tree>>) -> Self {
-    self.right = leaf;
-    self
-  }
+    fn right(mut self, leaf: Option<Box<Tree>>) -> Self {
+        self.right = leaf;
+        self
+    }
 
-  fn root(mut self, root: String) -> Self {
-    self.root = match root.as_str() {
-        "*" => Op::Mult,
-        "/" => Op::Divid,
-        "+" => Op::Plus,
-        "-" => Op::Minus,
-        _   => panic!("not operator"),
-    };
-    self
-  }
+    fn root(mut self, root: String) -> Self {
+        self.root = match root.as_str() {
+            "*" => Op::Mult,
+            "/" => Op::Divid,
+            "+" => Op::Plus,
+            "-" => Op::Minus,
+            _   => panic!("not operator"),
+        };
+        self
+    }
 }
 
 fn is_num(c: &char) -> bool {
@@ -104,7 +104,7 @@ fn enum_op(op: String) -> Op<String> {
 
 impl Tree {
     fn push_back(&mut self, value: String) {
-        // 最終要素探索関数.
+        // 最終要素探索関数
         fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
             if let Some(ref mut _n) = *tree {
                 last_node(&mut _n.right)
@@ -181,12 +181,7 @@ fn parser(code: String) -> Tree {
 }
 
 fn main() {
-    let code = String::from("1 + 2 + 3");
-    let ast = parser(code);
-
-    println!("{:?}", ast);
-
-    let code = String::from("1 * 2 + 3");
+    let code = String::from("1 + 2 + 3 + 3");
     let ast = parser(code);
 
     println!("{:?}", ast);

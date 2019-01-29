@@ -32,6 +32,7 @@ pub fn is_operator_products(c: &char) -> bool {
     match c {
         '*' => true,
         '/' => true,
+        '%' => true,
         _   => false,
     }
 }

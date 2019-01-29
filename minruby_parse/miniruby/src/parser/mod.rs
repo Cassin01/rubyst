@@ -4,10 +4,11 @@ use super::is;
 
 fn enum_op(op: String) -> Op<String> {
     match op.as_str() {
-        "*" => Op::Mult,
-        "/" => Op::Divid,
-        "+" => Op::Plus,
-        "-" => Op::Minus,
+        "*" => Op::Mul,
+        "/" => Op::Div,
+        "+" => Op::Add,
+        "-" => Op::Neg,
+        "%" => Op::Rem,
         _   => panic!("not operator"),
     }
 }
@@ -42,11 +43,11 @@ fn push_op_products(tree: Tree, op: String)
     -> Tree {
     match tree.root {
         Op::Nil => tree.root(op),
-        Op::Plus | Op::Minus =>
+        Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
-        Op::Mult | Op::Divid =>
+        Op::Mul | Op::Div | Op::Rem =>
             Tree::new(enum_op(op)).left(Some(Box::new(tree))),
-        _ => panic!("not operator"),
+        Op::Lit(_) => panic!("not operator"),
     }
 }
 

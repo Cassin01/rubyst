@@ -3,10 +3,11 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Op<T> {
     Nil,
-    Plus,
-    Minus,
-    Mult,
-    Divid,
+    Add,
+    Neg,
+    Mul,
+    Div,
+    Rem,
     Lit(T)
 }
 
@@ -44,10 +45,11 @@ impl Tree {
 
     pub fn root(mut self, root: String) -> Self {
         self.root = match root.as_str() {
-            "*" => Op::Mult,
-            "/" => Op::Divid,
-            "+" => Op::Plus,
-            "-" => Op::Minus,
+            "*" => Op::Mul,
+            "/" => Op::Div,
+            "+" => Op::Add,
+            "-" => Op::Neg,
+            "%" => Op::Rem,
             _   => panic!("not operator"),
         };
         self

@@ -46,24 +46,6 @@ fn push_num(mut tree: Tree, num: String) -> Tree {
     }
 }
 
-fn is_operator_sums(s: &String) -> bool {
-    match s.as_str() {
-        "+" => true,
-        "-" => true,
-        _   => false,
-    }
-}
-
-fn is_operator_puroducts(s: &String) -> bool {
-    match s.as_str() {
-        "*" => true,
-        "/" => true,
-        "%" => true,
-        "**" => true,
-        _   => false,
-    }
-}
-
 fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(insert_tree)))
@@ -122,9 +104,9 @@ pub fn parser(code: String) -> Tree {
                     break;
                 }
             }
-            if is_operator_sums(&op) {
+            if is::is_operator_sums(&op) {
                 ast = push_op(ast, op.clone());
-            } else if is_operator_puroducts(&op) {
+            } else if is::is_operator_puroducts(&op) {
                 ast = push_op_products(ast, op.clone());
             }
             op.clear();

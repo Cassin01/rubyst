@@ -44,3 +44,21 @@ pub fn is_second_bracket(c: &char) -> bool {
         _   => false,
     }
 }
+
+pub fn is_operator_sums(s: &String) -> bool {
+    match s.as_str() {
+        "+" => true,
+        "-" => true,
+        _   => false,
+    }
+}
+
+pub fn is_operator_puroducts(s: &String) -> bool {
+    match s.as_str() {
+        "*" => true,
+        "/" => true,
+        "%" => true,
+        "**" => true,
+        _   => false,
+    }
+}

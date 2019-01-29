@@ -9,6 +9,7 @@ fn enum_op(op: String) -> Op<String> {
         "+" => Op::Add,
         "-" => Op::Neg,
         "%" => Op::Rem,
+        "**" => Op::Pow,
         _   => panic!("not operator"),
     }
 }
@@ -45,7 +46,7 @@ fn push_op_products(tree: Tree, op: String)
         Op::Nil => tree.root(op),
         Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
-        Op::Mul | Op::Div | Op::Rem =>
+        Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(enum_op(op)).left(Some(Box::new(tree))),
         Op::Lit(_) => panic!("not operator"),
     }

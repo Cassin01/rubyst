@@ -38,6 +38,16 @@ pub fn evaluate(tree: Tree) -> i64 {
             let right = evaluate(Tree::extract_option(tree.right));
             left % right
         }
+        Op::Pow => {
+            let left  = evaluate(Tree::extract_option(tree.left));
+            let right = evaluate(Tree::extract_option(tree.right));
+            if right >= 0 {
+                left.pow(right as u32)
+            } else {
+                1 / left.pow((right * -1) as u32)
+            }
+        }
+
         Op::Nil => panic!("not interpret"),
     }
 }

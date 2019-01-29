@@ -37,6 +37,16 @@ pub fn is_operator_products(c: &char) -> bool {
     }
 }
 
+pub fn is_operator(c: &char) -> bool {
+    match c {
+        '*' => true,
+        '/' => true,
+        '%' => true,
+        '+' => true,
+        _   => false,
+    }
+}
+
 pub fn is_first_bracket(c: &char) -> bool {
     match c {
         '(' => true,

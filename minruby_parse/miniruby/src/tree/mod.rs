@@ -8,6 +8,7 @@ pub enum Op<T> {
     Mul,
     Div,
     Rem,
+    Pow,
     Lit(T)
 }
 
@@ -50,6 +51,7 @@ impl Tree {
             "+" => Op::Add,
             "-" => Op::Neg,
             "%" => Op::Rem,
+            "**" => Op::Pow,
             _   => panic!("not operator"),
         };
         self

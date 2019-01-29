@@ -1,15 +1,14 @@
 mod parser;
-use parser::parser;
 mod tree;
 mod is;
 mod interpreter;
 mod read_code;
 
+mod test_parser;
+use test_parser::parser;
+
 fn main() {
-    let code = read_code::read_code();
-
-    let ast = parser(code);
-
+    let ast = parser(String::from(" 1 + 15 % (2 ** 3)"));
     println!("{:?}", ast);
 
     println!("{}", interpreter::evaluate(ast));

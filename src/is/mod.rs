@@ -20,22 +20,6 @@ pub fn is_space(c: &char) -> bool {
     }
 }
 
-pub fn is_operator_sums(c: &char) -> bool {
-    match c {
-        '+' => true,
-        '-' => true,
-        _   => false,
-    }
-}
-
-pub fn is_operator_products(c: &char) -> bool {
-    match c {
-        '*' => true,
-        '/' => true,
-        '%' => true,
-        _   => false,
-    }
-}
 
 pub fn is_operator(c: &char) -> bool {
     match c {

@@ -2,12 +2,11 @@ mod tree;
 mod is;
 mod interpreter;
 mod read_code;
-
 mod parser;
-use parser::parser;
 
 fn main() {
-    let ast = parser(String::from(" 1 + 15 % (2 ** 3)"));
+    let code = read_code::read_code();
+    let ast = parser::parser(code);
     println!("{:?}", ast);
 
     println!("{}", interpreter::evaluate(ast));

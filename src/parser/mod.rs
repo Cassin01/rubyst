@@ -37,6 +37,18 @@ fn push_op_products(tree: Tree, op: String)
     }
 }
 
+fn push_op_pows(tree: Tree, op: String)
+    -> Tree {
+        match tree.root {
+            Op::Nil => tree.root(op),
+            Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
+                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+            Op::Pow =>
+                Tree::new(enum_op(op)).left(Some(Box::new(tree))),
+            Op::Lit(_) => panic!("not operator"),
+        }
+}
+
 fn push_num(mut tree: Tree, num: String) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(Tree::new(Op::Lit(num)))))
@@ -108,6 +120,8 @@ pub fn parser(code: String) -> Tree {
                 ast = push_op(ast, op.clone());
             } else if is::is_operator_puroducts(&op) {
                 ast = push_op_products(ast, op.clone());
+            } else if is::is_operator_pows(&op) {
+                ast = push_op_pows(ast, op.clone());
             }
             op.clear();
         }

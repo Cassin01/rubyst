@@ -20,7 +20,6 @@ pub fn is_space(c: &char) -> bool {
     }
 }
 
-
 pub fn is_operator(c: &char) -> bool {
     match c {
         '*' => true,
@@ -58,7 +57,13 @@ pub fn is_operator_puroducts(s: &String) -> bool {
         "*" => true,
         "/" => true,
         "%" => true,
-        "**" => true,
         _   => false,
+    }
+}
+
+pub fn is_operator_pows(s: &String) -> bool {
+    match s.as_str() {
+        "**" => true,
+        _    => false,
     }
 }

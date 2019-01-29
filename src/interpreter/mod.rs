@@ -47,6 +47,15 @@ pub fn evaluate(tree: Tree) -> i64 {
                 1 / left.pow((right * -1) as u32)
             }
         }
+        Op::Eql => {
+            let left  = evaluate(Tree::extract_option(tree.left));
+            let right = evaluate(Tree::extract_option(tree.right));
+            if left == right {
+                1
+            } else {
+                0
+            }
+        }
 
         Op::Nil => panic!("not interpret"),
     }

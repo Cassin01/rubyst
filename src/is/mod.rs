@@ -26,6 +26,7 @@ pub fn is_operator(c: &char) -> bool {
         '/' => true,
         '%' => true,
         '+' => true,
+        '=' => true,
         _   => false,
     }
 }
@@ -64,6 +65,13 @@ pub fn is_operator_puroducts(s: &String) -> bool {
 pub fn is_operator_pows(s: &String) -> bool {
     match s.as_str() {
         "**" => true,
+        _    => false,
+    }
+}
+
+pub fn is_operator_eqls(s: &String) -> bool {
+    match s.as_str() {
+        "==" => true,
         _    => false,
     }
 }

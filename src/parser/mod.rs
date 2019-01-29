@@ -5,13 +5,6 @@ use std::iter::Peekable;
 use std::str::Chars;
 
 
-fn push_op(tree: Tree, op: String) -> Tree {
-    if tree.root == Op::Nil {
-        tree.root(op)
-    } else {
-        Tree::new(enum_op(op)).left(Some(Box::new(tree)))
-    }
-}
 
 fn enum_op(op: String) -> Op<String> {
     match op.as_str() {
@@ -21,15 +14,36 @@ fn enum_op(op: String) -> Op<String> {
         "-" => Op::Neg,
         "%" => Op::Rem,
         "**" => Op::Pow,
+        "==" => Op::Eql,
         _   => panic!("not operator"),
     }
+}
+
+fn push_op_eqls(tree: Tree, op: String) -> Tree {
+    if tree.root == Op::Nil {
+        tree.root(op)
+    } else {
+        Tree::new(enum_op(op)).left(Some(Box::new(tree)))
+    }
+}
+
+fn push_op_sums(tree: Tree, op: String)
+    -> Tree {
+        match tree.root {
+            Op::Nil => tree.root(op),
+            Op::Eql =>
+                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+            Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
+                Tree::new(enum_op(op)).left(Some(Box::new(tree))),
+            Op::Lit(_) => panic!("not operator"),
+        }
 }
 
 fn push_op_products(tree: Tree, op: String)
     -> Tree {
     match tree.root {
         Op::Nil => tree.root(op),
-        Op::Add | Op::Neg =>
+        Op::Eql | Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(enum_op(op)).left(Some(Box::new(tree))),
@@ -41,7 +55,7 @@ fn push_op_pows(tree: Tree, op: String)
     -> Tree {
         match tree.root {
             Op::Nil => tree.root(op),
-            Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
+            Op::Eql | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
             Op::Pow =>
                 Tree::new(enum_op(op)).left(Some(Box::new(tree))),
@@ -117,11 +131,13 @@ pub fn parser(code: String) -> Tree {
                 }
             }
             if is::is_operator_sums(&op) {
-                ast = push_op(ast, op.clone());
+                ast = push_op_sums(ast, op.clone());
             } else if is::is_operator_puroducts(&op) {
                 ast = push_op_products(ast, op.clone());
             } else if is::is_operator_pows(&op) {
                 ast = push_op_pows(ast, op.clone());
+            } else if is::is_operator_eqls(&op) {
+                ast = push_op_eqls(ast, op.clone());
             }
             op.clear();
         }

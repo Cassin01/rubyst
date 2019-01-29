@@ -10,7 +10,6 @@ impl Tree {
     }
 }
 
-
 pub fn evaluate(tree: Tree) -> i64 {
     match tree.root {
         Op::Lit(x) => x.parse().unwrap(),

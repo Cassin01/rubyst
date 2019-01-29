@@ -82,8 +82,9 @@ pub fn parser(code: String) -> Tree {
             ast = push_tree(ast, parser(code_in_brackets.clone()));
             code_in_brackets.clear();
             not_brackets = true;
-        } else {
+        } else if !not_brackets {
             code_in_brackets.push(c);
+        } else {
         }
     }
     if num_flag {

@@ -3,9 +3,11 @@ use parser::parser;
 mod tree;
 mod is;
 mod interpreter;
+mod read_code;
 
 fn main() {
-    let code = String::from("(6 + 7) % 5 % (2 + 3)");
+    let code = read_code::read_code();
+
     let ast = parser(code);
 
     println!("{:?}", ast);

@@ -14,8 +14,7 @@ pub enum Op<T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct Tree {
-    pub root: Op<String>,
+pub struct Tree { pub root: Op<String>,
     pub left: Option<Box<Tree>>,
     pub right: Option<Box<Tree>>,
 }
@@ -45,17 +44,21 @@ impl Tree {
         self
     }
 
-    pub fn root(mut self, root: String) -> Self {
-        self.root = match root.as_str() {
+    pub fn enum_op(op: String) -> Op<String> {
+        match op.as_str() {
             "*" => Op::Mul,
             "/" => Op::Div,
             "+" => Op::Add,
             "-" => Op::Neg,
             "%" => Op::Rem,
             "**" => Op::Pow,
-            "==" => Op::Pow,
+            "==" => Op::Eql,
             _   => panic!("not operator"),
-        };
+        }
+    }
+
+    pub fn root(mut self, root: String) -> Self {
+        self.root = Self::enum_op(root);
         self
     }
 }

@@ -4,24 +4,11 @@ use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
 
-fn enum_op(op: String) -> Op<String> {
-    match op.as_str() {
-        "*" => Op::Mul,
-        "/" => Op::Div,
-        "+" => Op::Add,
-        "-" => Op::Neg,
-        "%" => Op::Rem,
-        "**" => Op::Pow,
-        "==" => Op::Eql,
-        _   => panic!("not operator"),
-    }
-}
-
 fn push_op_eqls(tree: Tree, op: String) -> Tree {
     if tree.root == Op::Nil {
         tree.root(op)
     } else {
-        Tree::new(enum_op(op)).left(Some(Box::new(tree)))
+        Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree)))
     }
 }
 
@@ -30,9 +17,9 @@ fn push_op_sums(tree: Tree, op: String)
         match tree.root {
             Op::Nil => tree.root(op),
             Op::Eql =>
-                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
-                Tree::new(enum_op(op)).left(Some(Box::new(tree))),
+                Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
             Op::Lit(_) => panic!("not operator"),
         }
 }
@@ -42,9 +29,9 @@ fn push_op_products(tree: Tree, op: String)
     match tree.root {
         Op::Nil => tree.root(op),
         Op::Eql | Op::Add | Op::Neg =>
-            Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+            Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
-            Tree::new(enum_op(op)).left(Some(Box::new(tree))),
+            Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
         Op::Lit(_) => panic!("not operator"),
     }
 }
@@ -54,9 +41,9 @@ fn push_op_pows(tree: Tree, op: String)
         match tree.root {
             Op::Nil => tree.root(op),
             Op::Eql | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
-                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(enum_op(op)).left(tree.right)))),
+                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Pow =>
-                Tree::new(enum_op(op)).left(Some(Box::new(tree))),
+                Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
             Op::Lit(_) => panic!("not operator"),
         }
 }

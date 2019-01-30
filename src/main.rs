@@ -9,5 +9,5 @@ fn main() {
     let ast = parser::parser(code);
     println!("{:?}", ast);
 
-    println!("{}", interpreter::evaluate(ast));
+    println!("{:?}", interpreter::evaluate(ast));
 }

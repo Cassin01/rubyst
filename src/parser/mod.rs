@@ -4,8 +4,6 @@ use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
 
-
-
 fn enum_op(op: String) -> Op<String> {
     match op.as_str() {
         "*" => Op::Mul,

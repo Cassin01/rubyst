@@ -1,6 +1,15 @@
 use super::tree::Tree;
 use super::tree::Op;
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum Type {
+    Int(i64),
+    Bool(bool),
+}
+use self::Type::Int;
+use self::Type::Bool;
+
+
 impl Tree {
     fn extract_option(leaf: Option<Box<Self>>) ->  Tree {
         match leaf {
@@ -10,50 +19,92 @@ impl Tree {
     }
 }
 
-pub fn evaluate(tree: Tree) -> i64 {
+pub fn evaluate(tree: Tree) -> Type {
     match tree.root {
-        Op::Lit(x) => x.parse().unwrap(),
+        Op::Lit(x) => Int(x.parse().unwrap()),
         Op::Add => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            left + right
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    Int(left + right)
+                } else {
+                    panic!("not int");
+                }
+            } else {
+                    panic!("not int");
+            }
         },
         Op::Neg => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            left - right
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    Int(left - right)
+                } else {
+                    panic!("not int");
+                }
+            } else {
+                    panic!("not int");
+            }
         },
         Op::Mul => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            left * right
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    Int(left * right)
+                } else {
+                    panic!("not int");
+                }
+            } else {
+                    panic!("not int");
+            }
         },
         Op::Div => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            left + right
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    Int(left / right)
+                } else {
+                    panic!("not int");
+                }
+            } else {
+                    panic!("not int");
+            }
         },
         Op::Rem => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            left % right
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    Int(left % right)
+                } else {
+                    panic!("not int");
+                }
+            } else {
+                    panic!("not int");
+            }
         }
         Op::Pow => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            if right >= 0 {
-                left.pow(right as u32)
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    if right >= 0 {
+                        Int(left.pow(right as u32))
+                    } else {
+                        Int(1 / left.pow((right * -1) as u32))
+                    }
+                } else {
+                    panic!("not int");
+                }
             } else {
-                1 / left.pow((right * -1) as u32)
+                    panic!("not int");
             }
         }
         Op::Eql => {
-            let left  = evaluate(Tree::extract_option(tree.left));
-            let right = evaluate(Tree::extract_option(tree.right));
-            if left == right {
-                1
+            if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
+                if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
+                    if left == right {
+                        Bool(true)
+                    } else {
+                        Bool(false)
+                    }
+                } else {
+                    panic!("not int");
+                }
             } else {
-                0
+                    panic!("not int");
             }
         }
 

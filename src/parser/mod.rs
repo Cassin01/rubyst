@@ -16,7 +16,7 @@ fn push_op_sums(tree: Tree, op: String)
     -> Tree {
         match tree.root {
             Op::Nil => tree.root(op),
-            Op::NEq | Op::Eql =>
+            Op::ROp(_) =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
                 Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
@@ -28,7 +28,7 @@ fn push_op_products(tree: Tree, op: String)
     -> Tree {
     match tree.root {
         Op::Nil => tree.root(op),
-        Op::NEq | Op::Eql | Op::Add | Op::Neg =>
+        Op::ROp(_) | Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
@@ -40,7 +40,7 @@ fn push_op_pows(tree: Tree, op: String)
     -> Tree {
         match tree.root {
             Op::Nil => tree.root(op),
-            Op::NEq | Op::Eql | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
+            Op::ROp(_) | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Pow =>
                 Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),

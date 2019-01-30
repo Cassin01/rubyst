@@ -9,9 +9,8 @@ pub enum Op<T> {
     Div,
     Rem,
     Pow,
-    Eql,
-    NEq,
-    Lit(T)
+    ROp(T), // Relational operator
+    Lit(T),
 }
 
 #[derive(Debug, Clone)]
@@ -53,8 +52,12 @@ impl Tree {
             "-" => Op::Neg,
             "%" => Op::Rem,
             "**" => Op::Pow,
-            "==" => Op::Eql,
-            "!=" => Op::NEq,
+            "==" => Op::ROp(String::from("==")),
+            "!=" => Op::ROp(String::from("!=")),
+            "<"  => Op::ROp(String::from("<")),
+            "<=" => Op::ROp(String::from("<=")),
+            ">=" => Op::ROp(String::from(">=")),
+            ">"  => Op::ROp(String::from(">")),
             _   => panic!("not operator"),
         }
     }

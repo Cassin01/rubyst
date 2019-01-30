@@ -1,5 +1,6 @@
 use super::tree::Tree;
 use super::tree::Op;
+mod functions;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
@@ -92,26 +93,23 @@ pub fn evaluate(tree: Tree) -> Type {
                     panic!("not int");
             }
         }
-        Op::Eql => {
+        Op::ROp(x) => {
             if let Int(left)  = evaluate(Tree::extract_option(tree.left)) {
                 if let Int(right) = evaluate(Tree::extract_option(tree.right)) {
-                    if left == right {
-                        Bool(true)
-                    } else {
-                        Bool(false)
-                    }
+                    match x.as_str() {
+                        "==" => Bool(functions::eq(left, right)),
+                        "!=" => Bool(!functions::eq(left, right)),
+                        "<"  => Bool(functions::lt(left, right)),
+                        "<=" => Bool(!functions::gt(left, right)),
+                        ">"  => Bool(functions::gt(left, right)),
+                        ">=" => Bool(!functions::lt(left, right)),
+                        _    => panic!("not operation"),
+                        }
                 } else {
-                    panic!("not int");
+                panic!("right isn't have Int")
                 }
             } else {
-                    panic!("not int");
-            }
-        }
-        Op::NEq => {
-            if let Bool(x) = evaluate(Tree::new(Op::Eql).left(tree.left).right(tree.right)) {
-                Bool(!x)
-            } else {
-                panic!("not bool");
+                panic!("left isn't have Int")
             }
         }
 

@@ -10,6 +10,7 @@ pub enum Op<T> {
     Rem,
     Pow,
     Eql,
+    NEq,
     Lit(T)
 }
 
@@ -53,6 +54,7 @@ impl Tree {
             "%" => Op::Rem,
             "**" => Op::Pow,
             "==" => Op::Eql,
+            "!=" => Op::NEq,
             _   => panic!("not operator"),
         }
     }

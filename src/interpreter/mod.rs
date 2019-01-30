@@ -107,6 +107,13 @@ pub fn evaluate(tree: Tree) -> Type {
                     panic!("not int");
             }
         }
+        Op::NEq => {
+            if let Bool(x) = evaluate(Tree::new(Op::Eql).left(tree.left).right(tree.right)) {
+                Bool(!x)
+            } else {
+                panic!("not bool");
+            }
+        }
 
         Op::Nil => panic!("not interpret"),
     }

@@ -9,7 +9,10 @@ pub fn read_code() -> String {
 
     let mut texts = String::new();
     for line in BufReader::new(file).lines() {
+        texts.push_str(&line.unwrap().to_owned());
+        /*
         texts.push_str(&line.unwrap().trim_right().to_owned());
+        */
     }
     texts
 }

@@ -1,6 +1,5 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
 
 pub fn read_code() -> String {

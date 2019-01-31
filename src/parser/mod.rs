@@ -4,6 +4,14 @@ use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
 
+fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
+    if tree.root == Op::Nil {
+        tree.root_fn(fnc).left(Some(Box::new(insert_tree)))
+    } else {
+        Tree::new(Op::Fun(fnc)).left(Some(Box::new(tree))).left(Some(Box::new(insert_tree)))
+    }
+}
+
 fn push_op_eqls(tree: Tree, op: String) -> Tree {
     if tree.root == Op::Nil {
         tree.root(op)
@@ -16,7 +24,7 @@ fn push_op_sums(tree: Tree, op: String)
     -> Tree {
         match tree.root {
             Op::Nil => tree.root(op),
-            Op::ROp(_) =>
+            Op::Fun(_) | Op::ROp(_) =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
                 Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
@@ -28,7 +36,7 @@ fn push_op_products(tree: Tree, op: String)
     -> Tree {
     match tree.root {
         Op::Nil => tree.root(op),
-        Op::ROp(_) | Op::Add | Op::Neg =>
+        Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
@@ -40,7 +48,7 @@ fn push_op_pows(tree: Tree, op: String)
     -> Tree {
         match tree.root {
             Op::Nil => tree.root(op),
-            Op::ROp(_) | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
+            Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Pow =>
                 Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
@@ -69,6 +77,7 @@ fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
 pub fn parser(code: String) -> Tree {
     let mut num = String::new();
     let mut op = String::new();
+    let mut ob = String::new();
     let mut code_in_brackets = String::new();
 
     // Abstract syntax tree
@@ -140,6 +149,37 @@ pub fn parser(code: String) -> Tree {
             cs.next();
             ast = push_tree(ast, parser(code_in_brackets.clone()));
             code_in_brackets.clear();
+        }
+
+        // 関数 (変数)
+        else if is_this(&mut cs, &is::is_alphabet) {
+            while is_this(&mut cs, &is::is_alphabet) {
+                if let Some(c) = cs.next() {
+                    ob.push(c);
+                } else {
+                    break;
+                }
+            }
+
+            // 関数
+            if is_this(&mut cs, &is::is_first_bracket) {
+                cs.next();
+                while !is_this(&mut cs, &is::is_second_bracket) {
+                    if let Some(c) = cs.next() {
+                        code_in_brackets.push(c);
+                    } else {
+                        break;
+                    }
+                }
+                cs.next();
+                ast = push_fun(ast, ob.clone(), parser(code_in_brackets.clone()));
+                code_in_brackets.clear();
+
+            // 変数
+            } else {
+                panic!("valuable is not supported");
+            }
+            ob.clear();
         }
     }
     ast

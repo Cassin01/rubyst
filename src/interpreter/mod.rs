@@ -30,7 +30,7 @@ pub fn evaluate(tree: Tree) -> Type {
         Op::Rem    => adapt_funci(tree, &functions::rem),
         Op::Pow    => adapt_funci(tree, &functions::pow),
         Op::ROp(_) => adapt_funcb(tree, &rop),
-        Op::Fun(_)    => adapt_funcf(tree),
+        Op::Fun(_) => adapt_funcf(tree),
         Op::Nil => panic!("not interpret"),
     }
 }
@@ -39,7 +39,7 @@ fn p(t: Type) -> Type{
     match t {
         Int(x)  => println!("{}", x),
         Bool(x) => println!("{}", x),
-        _       => panic!("funciton p is support type {:?}", t),
+        _       => panic!("funciton p is not support type {:?}", t),
     }
     Type::Nil
 }

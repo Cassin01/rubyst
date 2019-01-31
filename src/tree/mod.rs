@@ -9,12 +9,14 @@ pub enum Op<T> {
     Div,
     Rem,
     Pow,
+    Fun(T),
     ROp(T), // Relational operator
     Lit(T),
 }
 
 #[derive(Debug, Clone)]
-pub struct Tree { pub root: Op<String>,
+pub struct Tree {
+    pub root: Op<String>,
     pub left: Option<Box<Tree>>,
     pub right: Option<Box<Tree>>,
 }
@@ -60,6 +62,11 @@ impl Tree {
             ">"  => Op::ROp(String::from(">")),
             _   => panic!("not operator"),
         }
+    }
+
+    pub fn root_fn(mut self, root: String) -> Self {
+        self.root = Op::Fun(root);
+        self
     }
 
     pub fn root(mut self, root: String) -> Self {

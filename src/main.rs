@@ -7,9 +7,7 @@ mod stmts;
 
 fn main() {
     let code = read_code::read_code();
-    println!("{}", code);
     let ast = parser::parser(code);
-    println!("{:?}", ast);
 
-    println!("{:?}", interpreter::evaluate(ast));
+    interpreter::evaluate(ast);
 }

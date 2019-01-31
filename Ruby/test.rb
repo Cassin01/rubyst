@@ -1,6 +1,3 @@
-require "minruby"
-
-
-tree = minruby_parse("2 == 3 * 3")
-
-p(tree)
+p(1 + 2)
+p(6 * 7)
+p(40 + 2)

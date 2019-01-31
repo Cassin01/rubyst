@@ -1,15 +1,15 @@
 pub fn is_num(c: &char) -> bool {
     match c {
-        '1' => true,
-        '2' => true,
-        '3' => true,
-        '4' => true,
-        '5' => true,
-        '6' => true,
-        '7' => true,
-        '8' => true,
-        '9' => true,
-        _   => false
+        '1' ... '9' => true,
+                _   => false
+    }
+}
+
+pub fn is_alphabet(c: &char) -> bool {
+    match c {
+        'a' ... 'z' => true,
+        '_'         => true,
+        _           => false,
     }
 }
 

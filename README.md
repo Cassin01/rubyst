@@ -1,5 +1,5 @@
 # Rubyst
-
+Rustで作るRuby
 An Ruby made from Rust
 
 # 参考

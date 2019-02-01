@@ -32,5 +32,13 @@ An Ruby made from Rust.
 | :---: | :---:|
 | print文 | p() |
 
+## 記述例
+
+```main.eld
+p(1 + 2)
+p(3 * 3)
+p(4 % 6)
+```
+
 ## 参考
 遠藤侑介 RubyでつくるRuby ラムダノート株式会社

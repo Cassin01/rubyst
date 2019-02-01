@@ -31,6 +31,7 @@ pub fn evaluate(tree: Tree) -> Type {
         Op::Pow    => adapt_funci(tree, &functions::pow),
         Op::ROp(_) => adapt_funcb(tree, &rop),
         Op::Fun(_) => adapt_funcf(tree),
+        Op::STMT(_) => adapt_func_stmt(tree),
         Op::Nil => panic!("not interpret"),
     }
 }
@@ -42,6 +43,15 @@ fn p(t: Type) -> Type{
         _       => panic!("funciton p is not support type {:?}", t),
     }
     Type::Nil
+}
+
+fn adapt_func_stmt(tree: Tree) -> Type {
+    if let Op::STMT(stmt) = tree.root {
+        evaluate(*stmt);
+        evaluate(Tree::extract_option(tree.left))
+    } else {
+        panic!("This is not statement");
+    }
 }
 
 fn adapt_funcf(tree: Tree) -> Type {

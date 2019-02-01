@@ -12,9 +12,10 @@ pub enum Op<T> {
     Fun(T),
     ROp(T), // Relational operator
     Lit(T),
+    STMT(Box<Tree>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Tree {
     pub root: Op<String>,
     pub left: Option<Box<Tree>>,

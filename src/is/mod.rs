@@ -46,6 +46,13 @@ pub fn is_second_bracket(c: &char) -> bool {
     }
 }
 
+pub fn is_new_line(c: &char) -> bool {
+    match c {
+        '\n' => true,
+        _    => false,
+    }
+}
+
 pub fn is_operator_sums(s: &String) -> bool {
     match s.as_str() {
         "+" => true,

@@ -84,30 +84,22 @@ impl Tree {
 
 impl Tree {
     pub fn push_back_op(&mut self, op: Op<String>) {
-        // 最終要素探索関数
-        fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
-            if let Some(ref mut _n) = *tree {
-                last_node(&mut _n.right)
-            }
-            else {
-                tree
-            }
-        }
-        let _node = last_node(&mut self.right);
+        let _node = Self::last_node(&mut self.right);
         *_node = Some(Box::new(Tree::new(op)));
     }
 
     pub fn push_back_tree(&mut self, tree: Tree) {
-        // 最終要素探索関数
-        fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
-            if let Some(ref mut _n) = *tree {
-                last_node(&mut _n.right)
-            }
-            else {
-                tree
-            }
-        }
-        let _node = last_node(&mut self.right);
+        let _node = Self::last_node(&mut self.right);
         *_node = Some(Box::new(tree));
+    }
+
+    // 最終要素探索関数
+    fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
+        if let Some(ref mut _n) = *tree {
+            Self::last_node(&mut _n.right)
+        }
+        else {
+            tree
+        }
     }
 }

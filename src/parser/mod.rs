@@ -92,7 +92,7 @@ fn push_num(mut tree: Tree, num: String) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(Tree::new(Op::Lit(num)))))
     } else {
-        tree.push_back(num);
+        tree.push_back_op(Op::Lit(num));
         tree
     }
 }
@@ -101,7 +101,7 @@ fn push_val(mut tree: Tree, val: String) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(Tree::new(Op::Val(val)))))
     } else {
-        tree.push_backv(val);
+        tree.push_back_op(Op::Val(val));
         tree
     }
 }

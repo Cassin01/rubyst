@@ -9,9 +9,11 @@ pub enum Op<T> {
     Div,
     Rem,
     Pow,
+    Asi,    // Assignment operator
     Fun(T),
     ROp(T), // Relational operator
     Lit(T),
+    Val(T),
     STMT(Box<Tree>),
 }
 
@@ -49,11 +51,11 @@ impl Tree {
 
     pub fn enum_op(op: String) -> Op<String> {
         match op.as_str() {
-            "*" => Op::Mul,
-            "/" => Op::Div,
-            "+" => Op::Add,
-            "-" => Op::Neg,
-            "%" => Op::Rem,
+            "*"  => Op::Mul,
+            "/"  => Op::Div,
+            "+"  => Op::Add,
+            "-"  => Op::Neg,
+            "%"  => Op::Rem,
             "**" => Op::Pow,
             "==" => Op::ROp(String::from("==")),
             "!=" => Op::ROp(String::from("!=")),
@@ -61,8 +63,12 @@ impl Tree {
             "<=" => Op::ROp(String::from("<=")),
             ">=" => Op::ROp(String::from(">=")),
             ">"  => Op::ROp(String::from(">")),
-            _   => panic!("not operator"),
+            _    => panic!("not operator"),
         }
+    }
+    pub fn root_op(mut self, root: Op<String>) -> Self {
+        self.root = root;
+        self
     }
 
     pub fn root_fn(mut self, root: String) -> Self {
@@ -89,6 +95,20 @@ impl Tree {
         }
         let _node = last_node(&mut self.right);
         *_node = Some(Box::new(Tree::new(Op::Lit(value))));
+    }
+
+    pub fn push_backv(&mut self, value: String) {
+        // 最終要素探索関数
+        fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
+            if let Some(ref mut _n) = *tree {
+                last_node(&mut _n.right)
+            }
+            else {
+                tree
+            }
+        }
+        let _node = last_node(&mut self.right);
+        *_node = Some(Box::new(Tree::new(Op::Val(value))));
     }
 
     pub fn push_back_tree(&mut self, tree: Tree) {

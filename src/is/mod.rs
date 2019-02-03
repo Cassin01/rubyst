@@ -84,3 +84,10 @@ pub fn is_operator_eqls(s: &String) -> bool {
         _    => false,
     }
 }
+
+pub fn is_operator_assign(s: &String) -> bool {
+    match s.as_str() {
+        "="  => true,
+        _    => false,
+    }
+}

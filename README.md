@@ -32,12 +32,16 @@ An Ruby made from Rust.
 | :---: | :---:|
 | print文 | p() |
 
+変数
+
 ## 記述例
 
 ```main.eld
-p(1 + 2)
-p(3 * 3)
-p(4 % 6)
+x = 1
+y = x + 1
+p(x + 2)
+p(x * 3)
+p(y % 6)
 ```
 
 ## 参考

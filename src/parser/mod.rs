@@ -20,7 +20,7 @@ fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
 fn push_op_asi(tree: Tree, op: Op<String>) -> Tree {
     if let Op::Asi = op {
         match tree.root {
-            Op::Nil => tree.root_op(op),
+            Op::Nil => tree.root(op),
             Op::Asi => Tree::new(tree.root)
                             .left(tree.left)
                             .right(Some(Box::new(
@@ -37,7 +37,7 @@ fn push_op_asi(tree: Tree, op: Op<String>) -> Tree {
 
 fn push_op_eqls(tree: Tree, op: String) -> Tree {
     match tree.root {
-        Op::Nil => tree.root(op),
+        Op::Nil => tree.root(Tree::enum_op(op)),
         Op::Asi => Tree::new(tree.root)
                         .left(tree.left)
                         .right(Some(Box::new(
@@ -52,7 +52,7 @@ fn push_op_eqls(tree: Tree, op: String) -> Tree {
 fn push_op_sums(tree: Tree, op: String)
     -> Tree {
         match tree.root {
-            Op::Nil => tree.root(op),
+            Op::Nil => tree.root(Tree::enum_op(op)),
             Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) =>
                 Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
             Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
@@ -64,7 +64,7 @@ fn push_op_sums(tree: Tree, op: String)
 fn push_op_products(tree: Tree, op: String)
     -> Tree {
     match tree.root {
-        Op::Nil => tree.root(op),
+        Op::Nil => tree.root(Tree::enum_op(op)),
         Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg =>
             Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
@@ -76,7 +76,7 @@ fn push_op_products(tree: Tree, op: String)
 fn push_op_pows(tree: Tree, op: String)
     -> Tree {
         match tree.root {
-            Op::Nil => tree.root(op),
+            Op::Nil => tree.root(Tree::enum_op(op)),
             Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) | Op::Add |
             Op::Neg | Op::Mul | Op::Div | Op::Rem =>
                 Tree::new(tree.root)

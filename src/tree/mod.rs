@@ -66,18 +66,13 @@ impl Tree {
             _    => panic!("not operator"),
         }
     }
-    pub fn root_op(mut self, root: Op<String>) -> Self {
+    pub fn root(mut self, root: Op<String>) -> Self {
         self.root = root;
         self
     }
 
     pub fn root_fn(mut self, root: String) -> Self {
         self.root = Op::Fun(root);
-        self
-    }
-
-    pub fn root(mut self, root: String) -> Self {
-        self.root = Self::enum_op(root);
         self
     }
 }

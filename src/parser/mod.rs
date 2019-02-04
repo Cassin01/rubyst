@@ -89,21 +89,12 @@ fn push_op_pows(tree: Tree, op: String)
         }
 }
 
-fn push_num(mut tree: Tree, num: String) -> Tree {
+// push numbers and values
+fn push_nv(mut tree: Tree, op: Op<String>) -> Tree {
     if tree.root == Op::Nil {
-        tree.left(Some(Box::new(Tree::new(Op::Lit(num)))))
+        tree.left(Some(Box::new(Tree::new(op))))
     } else {
-        //tree.push_back_op(Op::Lit(num));
-        tree.push_back(Op::Lit(num));
-        tree
-    }
-}
-
-fn push_val(mut tree: Tree, val: String) -> Tree {
-    if tree.root == Op::Nil {
-        tree.left(Some(Box::new(Tree::new(Op::Val(val)))))
-    } else {
-        tree.push_back(Op::Val(val));
+        tree.push_back(op);
         tree
     }
 }
@@ -119,8 +110,8 @@ fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
 
 pub fn parser(mut cs: Peekable<Chars>) -> Tree {
     let mut num = String::new();
-    let mut op = String::new();
-    let mut ob = String::new();
+    let mut op  = String::new();
+    let mut ob  = String::new();
     let mut code_in_brackets = String::new();
 
     // Abstract syntax tree
@@ -148,7 +139,8 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                     break;
                 }
             }
-            ast = push_num(ast, num.clone());
+            //ast = push_num(ast, num.clone());
+            ast = push_nv(ast, Op::Lit(num.clone()));
             num.clear();
         }
 
@@ -226,7 +218,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 変数
             } else {
-                ast = push_val(ast, ob.clone());
+                ast = push_nv(ast, Op::Val(ob.clone()));
             }
             ob.clear();
         }

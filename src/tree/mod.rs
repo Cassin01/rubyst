@@ -82,17 +82,25 @@ impl Tree {
     }
 }
 
+pub trait PushBack<T> {
+    fn push_back(&mut self, new_node: T);
+}
+
+impl PushBack<Tree> for Tree {
+    fn push_back(&mut self, new_node: Tree) {
+        let _node = Self::last_node(&mut self.right);
+        *_node = Some(Box::new(new_node));
+    }
+}
+
+impl PushBack<Op<String>> for Tree {
+    fn push_back(&mut self, new_node: Op<String>) {
+        let _node = Self::last_node(&mut self.right);
+        *_node = Some(Box::new(Tree::new(new_node)));
+    }
+}
+
 impl Tree {
-    pub fn push_back_op(&mut self, op: Op<String>) {
-        let _node = Self::last_node(&mut self.right);
-        *_node = Some(Box::new(Tree::new(op)));
-    }
-
-    pub fn push_back_tree(&mut self, tree: Tree) {
-        let _node = Self::last_node(&mut self.right);
-        *_node = Some(Box::new(tree));
-    }
-
     // 最終要素探索関数
     fn last_node(tree: &mut Option<Box<Tree>>) -> &mut Option<Box<Tree>> {
         if let Some(ref mut _n) = *tree {

@@ -3,6 +3,7 @@ use super::tree::Op;
 use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
+use super::tree::PushBack;
 
 fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
     Tree::new(Op::STMT(Box::new(tree))).left(Some(Box::new(insert_tree)))
@@ -92,7 +93,8 @@ fn push_num(mut tree: Tree, num: String) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(Tree::new(Op::Lit(num)))))
     } else {
-        tree.push_back_op(Op::Lit(num));
+        //tree.push_back_op(Op::Lit(num));
+        tree.push_back(Op::Lit(num));
         tree
     }
 }
@@ -101,7 +103,7 @@ fn push_val(mut tree: Tree, val: String) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(Tree::new(Op::Val(val)))))
     } else {
-        tree.push_back_op(Op::Val(val));
+        tree.push_back(Op::Val(val));
         tree
     }
 }
@@ -110,7 +112,7 @@ fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
         tree.left(Some(Box::new(insert_tree)))
     } else {
-        tree.push_back_tree(insert_tree);
+        tree.push_back(insert_tree);
         tree
     }
 }

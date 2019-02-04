@@ -11,7 +11,7 @@ fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
 
 fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
-        tree.root_fn(fnc).left(Some(Box::new(insert_tree)))
+        tree.root(Op::Fun(fnc)).left(Some(Box::new(insert_tree)))
     } else {
         Tree::new(Op::Fun(fnc)).left(Some(Box::new(tree))).left(Some(Box::new(insert_tree)))
     }

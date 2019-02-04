@@ -49,6 +49,11 @@ impl Tree {
         self
     }
 
+    pub fn root(mut self, root: Op<String>) -> Self {
+        self.root = root;
+        self
+    }
+
     pub fn enum_op(op: String) -> Op<String> {
         match op.as_str() {
             "*"  => Op::Mul,
@@ -65,15 +70,6 @@ impl Tree {
             ">"  => Op::ROp(String::from(">")),
             _    => panic!("not operator"),
         }
-    }
-    pub fn root(mut self, root: Op<String>) -> Self {
-        self.root = root;
-        self
-    }
-
-    pub fn root_fn(mut self, root: String) -> Self {
-        self.root = Op::Fun(root);
-        self
     }
 }
 

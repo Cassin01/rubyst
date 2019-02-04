@@ -4,16 +4,17 @@ use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
 use super::tree::PushBack;
+use super::tree::TreeInsert;
 
 fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
-    Tree::new(Op::STMT(Box::new(tree))).left(Some(Box::new(insert_tree)))
+    Tree::new(Op::STMT(Box::new(tree))).left(insert_tree)
 }
 
 fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
-        tree.root(Op::Fun(fnc)).left(Some(Box::new(insert_tree)))
+        tree.root(Op::Fun(fnc)).left(insert_tree)
     } else {
-        Tree::new(Op::Fun(fnc)).left(Some(Box::new(tree))).left(Some(Box::new(insert_tree)))
+        Tree::new(Op::Fun(fnc)).left(tree).left(insert_tree)
     }
 }
 
@@ -23,12 +24,9 @@ fn push_op_asi(tree: Tree, op: Op<String>) -> Tree {
             Op::Nil => tree.root(op),
             Op::Asi => Tree::new(tree.root)
                             .left(tree.left)
-                            .right(Some(Box::new(
-                                Tree::new(Op::Asi)
-                                    .left(tree.right)))),
+                            .right(Tree::new(Op::Asi).left(tree.right)),
             Op::Val(_) | Op::Lit(_) => panic!("not operator"),
-            _       => Tree::new(Op::Asi)
-                            .left(Some(Box::new(tree)))
+            _       => Tree::new(Op::Asi).left(tree)
         }
     } else {
         panic!("not assignment operation");
@@ -40,12 +38,10 @@ fn push_op_eqls(tree: Tree, op: String) -> Tree {
         Op::Nil => tree.root(Tree::enum_op(op)),
         Op::Asi => Tree::new(tree.root)
                         .left(tree.left)
-                        .right(Some(Box::new(
-                            Tree::new(Tree::enum_op(op))
-                                .left(tree.right)))),
+                        .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
         Op::Val(_) | Op::Lit(_) => panic!("not operator"),
         _       => Tree::new(Tree::enum_op(op))
-                        .left(Some(Box::new(tree)))
+                        .left(tree)
     }
 }
 
@@ -54,9 +50,9 @@ fn push_op_sums(tree: Tree, op: String)
         match tree.root {
             Op::Nil => tree.root(Tree::enum_op(op)),
             Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) =>
-                Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
+                Tree::new(tree.root).left(tree.left).right(Tree::new(Tree::enum_op(op)).left(tree.right)),
             Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
-                Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
+                Tree::new(Tree::enum_op(op)).left(tree),
             Op::Val(_) | Op::Lit(_) => panic!("not operator"),
         }
 }
@@ -66,9 +62,9 @@ fn push_op_products(tree: Tree, op: String)
     match tree.root {
         Op::Nil => tree.root(Tree::enum_op(op)),
         Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg =>
-            Tree::new(tree.root).left(tree.left).right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
+            Tree::new(tree.root).left(tree.left).right(Tree::new(Tree::enum_op(op)).left(tree.right)),
         Op::Mul | Op::Div | Op::Rem | Op::Pow =>
-            Tree::new(Tree::enum_op(op)).left(Some(Box::new(tree))),
+            Tree::new(Tree::enum_op(op)).left(tree),
         Op::Val(_) | Op::Lit(_) => panic!("not operator"),
     }
 }
@@ -81,10 +77,10 @@ fn push_op_pows(tree: Tree, op: String)
             Op::Neg | Op::Mul | Op::Div | Op::Rem =>
                 Tree::new(tree.root)
                     .left(tree.left)
-                    .right(Some(Box::new(Tree::new(Tree::enum_op(op)).left(tree.right)))),
+                    .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
             Op::Pow =>
                 Tree::new(Tree::enum_op(op))
-                .left(Some(Box::new(tree))),
+                .left(tree),
             Op::Val(_) | Op::Lit(_) => panic!("not operator"),
         }
 }
@@ -92,7 +88,7 @@ fn push_op_pows(tree: Tree, op: String)
 // push numbers and values
 fn push_nv(mut tree: Tree, op: Op<String>) -> Tree {
     if tree.root == Op::Nil {
-        tree.left(Some(Box::new(Tree::new(op))))
+        tree.left(Tree::new(op))
     } else {
         tree.push_back(op);
         tree
@@ -101,7 +97,7 @@ fn push_nv(mut tree: Tree, op: Op<String>) -> Tree {
 
 fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
-        tree.left(Some(Box::new(insert_tree)))
+        tree.left(insert_tree)
     } else {
         tree.push_back(insert_tree);
         tree
@@ -131,7 +127,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
         }
 
         // 数字
-        if is_this(&mut cs, &is::is_num) {
+        else if is_this(&mut cs, &is::is_num) {
             while is_this(&mut cs, &is::is_num) {
                 if let Some(c) = cs.next() {
                     num.push(c);
@@ -139,7 +135,6 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                     break;
                 }
             }
-            //ast = push_num(ast, num.clone());
             ast = push_nv(ast, Op::Lit(num.clone()));
             num.clear();
         }

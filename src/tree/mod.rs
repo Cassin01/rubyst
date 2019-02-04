@@ -17,6 +17,33 @@ pub enum Op<T> {
     STMT(Box<Tree>),
 }
 
+pub trait TreeInsert<T> {
+    fn left(self, T) -> Tree;
+    fn right(self, T) -> Tree;
+}
+
+impl TreeInsert<Option<Box<Tree>>> for Tree {
+    fn left(mut self, leaf: Option<Box<Tree>>) -> Tree {
+        self.left = leaf;
+        self
+    }
+    fn right(mut self, leaf: Option<Box<Tree>>) -> Tree {
+        self.right = leaf;
+        self
+    }
+}
+
+impl TreeInsert<Tree> for Tree {
+    fn left(mut self, leaf: Tree) -> Tree {
+        self.left = Some(Box::new(leaf));
+        self
+    }
+    fn right(mut self, leaf: Tree) -> Tree {
+        self.right = Some(Box::new(leaf));
+        self
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Tree {
     pub root: Op<String>,
@@ -37,16 +64,6 @@ impl Tree {
             left: None,
             right: None,
         }
-    }
-
-    pub fn left(mut self, leaf: Option<Box<Tree>>) -> Self {
-        self.left = leaf;
-        self
-    }
-
-    pub fn right(mut self, leaf: Option<Box<Tree>>) -> Self {
-        self.right = leaf;
-        self
     }
 
     pub fn root(mut self, root: Op<String>) -> Self {

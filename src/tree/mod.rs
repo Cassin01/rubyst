@@ -1,6 +1,13 @@
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct Tree {
+    pub root: Op<String>,
+    pub left: Option<Box<Tree>>,
+    pub right: Option<Box<Tree>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Op<T> {
     Nil,
     Add,
@@ -42,13 +49,6 @@ impl TreeInsert<Tree> for Tree {
         self.right = Some(Box::new(leaf));
         self
     }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Tree {
-    pub root: Op<String>,
-    pub left: Option<Box<Tree>>,
-    pub right: Option<Box<Tree>>,
 }
 
 impl fmt::Display for Tree {

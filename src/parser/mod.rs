@@ -24,15 +24,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 数字
         else if is::is_this(&mut cs, &is::is_num) {
-            let mut num = String::new();
-            while is::is_this(&mut cs, &is::is_num) {
-                if let Some(c) = cs.next() {
-                    num.push(c);
-                } else {
-                    break;
-                }
-            }
-            ast = push::push_nv(ast, Op::Lit(num.clone()));
+            ast = push::push_nv(ast, Op::Lit(make_name(&mut cs, &is::is_num).clone()));
         }
 
         // スペース
@@ -47,14 +39,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 演算子
         else if is::is_this(&mut cs, &is::is_operator) {
-            let mut op = String::new();
-            while is::is_this(&mut cs, &is::is_operator) {
-                if let Some(c) = cs.next() {
-                    op.push(c);
-                } else {
-                    break;
-                }
-            }
+            let op = make_name(&mut cs, &is::is_operator);
             if is::is_operator_sums(&op) {
                 ast = push::push_op_sums(ast, op.clone());
             } else if is::is_operator_puroducts(&op) {
@@ -73,30 +58,37 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             ast = push::push_tree(ast, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
         }
 
-        // 関数 (変数)
+        // 関数, 変数
         else if is::is_this(&mut cs, &is::is_alphabet) {
-            let mut ob = String::new();
-            while is::is_this(&mut cs, &is::is_alphabet) {
-                if let Some(c) = cs.next() {
-                    ob.push(c);
-                } else {
-                    break;
-                }
-            }
+            // 名前取得
+            let ob = make_name(&mut cs, &is::is_alphabet);
 
             // 関数
             if is::is_this(&mut cs, &is::is_first_bracket) {
-                ast = push::push_fun(ast, ob.clone(), parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+                ast = push::push_fun(ast, ob, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
 
             // 予約語
+            } else if is::is_reserved_word(&ob) {
 
             // 変数
             } else {
-                ast = push::push_nv(ast, Op::Val(ob.clone()));
+                ast = push::push_nv(ast, Op::Val(ob));
             }
         }
     }
     ast
+}
+
+fn make_name(cs: &mut Peekable<Chars>, is: &Fn(&char)->bool) -> String {
+    let mut name = String::new();
+    while is::is_this(cs, &is) {
+        if let Some(c) = cs.next() {
+            name.push(c);
+        } else {
+            break;
+        }
+    }
+    name
 }
 
 fn eat_codes_in_bracket(cs: &mut Peekable<Chars>) -> String {

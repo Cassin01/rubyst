@@ -37,7 +37,7 @@ An Ruby made from Rust.
 ## 記述例
 
 ```main.eld
-x = 1
+(x = 1)
 y = x + 1
 p(x + 2)
 p(x * 3)

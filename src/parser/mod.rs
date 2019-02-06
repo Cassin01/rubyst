@@ -115,11 +115,6 @@ fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
 }
 
 pub fn parser(mut cs: Peekable<Chars>) -> Tree {
-    let mut num = String::new();
-    let mut op  = String::new();
-    let mut ob  = String::new();
-    let mut code_in_brackets = String::new();
-
     // Abstract syntax tree
     let mut ast = Tree::new(Op::Nil);
 
@@ -138,6 +133,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 数字
         else if is_this(&mut cs, &is::is_num) {
+            let mut num = String::new();
             while is_this(&mut cs, &is::is_num) {
                 if let Some(c) = cs.next() {
                     num.push(c);
@@ -146,7 +142,6 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                 }
             }
             ast = push_nv(ast, Op::Lit(num.clone()));
-            num.clear();
         }
 
         // スペース
@@ -161,6 +156,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 演算子
         else if is_this(&mut cs, &is::is_operator) {
+            let mut op = String::new();
             while is_this(&mut cs, &is::is_operator) {
                 if let Some(c) = cs.next() {
                     op.push(c);
@@ -179,17 +175,16 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             } else if is::is_operator_assign(&op) {
                 ast = push_op_asi(ast, Op::Asi);
             }
-            op.clear();
         }
 
         // 括弧
         else if is_this(&mut cs, &is::is_first_bracket) {
             ast = push_tree(ast, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
-            code_in_brackets.clear();
         }
 
         // 関数 (変数)
         else if is_this(&mut cs, &is::is_alphabet) {
+            let mut ob = String::new();
             while is_this(&mut cs, &is::is_alphabet) {
                 if let Some(c) = cs.next() {
                     ob.push(c);
@@ -201,13 +196,13 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             // 関数
             if is_this(&mut cs, &is::is_first_bracket) {
                 ast = push_fun(ast, ob.clone(), parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
-                code_in_brackets.clear();
+
+            // 予約語
 
             // 変数
             } else {
                 ast = push_nv(ast, Op::Val(ob.clone()));
             }
-            ob.clear();
         }
     }
     ast

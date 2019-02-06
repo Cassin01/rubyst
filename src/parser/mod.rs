@@ -6,6 +6,100 @@ use std::str::Chars;
 use super::tree::PushBack;
 use super::tree::TreeInsert;
 
+pub fn parser(mut cs: Peekable<Chars>) -> Tree {
+    // Abstract syntax tree
+    let mut ast = Tree::new(Op::Nil);
+
+    loop {
+        match cs.peek() {
+            Some(_) => (),
+            None => break,
+        }
+
+        // 複文
+        if is_this(&mut cs, &is::is_new_line) {
+            cs.next();
+            ast = push_stmt(ast, parser(cs));
+            break;
+        }
+
+        // 数字
+        else if is_this(&mut cs, &is::is_num) {
+            let mut num = String::new();
+            while is_this(&mut cs, &is::is_num) {
+                if let Some(c) = cs.next() {
+                    num.push(c);
+                } else {
+                    break;
+                }
+            }
+            ast = push_nv(ast, Op::Lit(num.clone()));
+        }
+
+        // スペース
+        else if is_this(&mut cs, &is::is_space) {
+            while is_this(&mut cs, &is::is_space) {
+                if let Some(_) = cs.next() {
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // 演算子
+        else if is_this(&mut cs, &is::is_operator) {
+            let mut op = String::new();
+            while is_this(&mut cs, &is::is_operator) {
+                if let Some(c) = cs.next() {
+                    op.push(c);
+                } else {
+                    break;
+                }
+            }
+            if is::is_operator_sums(&op) {
+                ast = push_op_sums(ast, op.clone());
+            } else if is::is_operator_puroducts(&op) {
+                ast = push_op_products(ast, op.clone());
+            } else if is::is_operator_pows(&op) {
+                ast = push_op_pows(ast, op.clone());
+            } else if is::is_operator_eqls(&op) {
+                ast = push_op_eqls(ast, op.clone());
+            } else if is::is_operator_assign(&op) {
+                ast = push_op_asi(ast, Op::Asi);
+            }
+        }
+
+        // 括弧
+        else if is_this(&mut cs, &is::is_first_bracket) {
+            ast = push_tree(ast, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+        }
+
+        // 関数 (変数)
+        else if is_this(&mut cs, &is::is_alphabet) {
+            let mut ob = String::new();
+            while is_this(&mut cs, &is::is_alphabet) {
+                if let Some(c) = cs.next() {
+                    ob.push(c);
+                } else {
+                    break;
+                }
+            }
+
+            // 関数
+            if is_this(&mut cs, &is::is_first_bracket) {
+                ast = push_fun(ast, ob.clone(), parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+
+            // 予約語
+
+            // 変数
+            } else {
+                ast = push_nv(ast, Op::Val(ob.clone()));
+            }
+        }
+    }
+    ast
+}
+
 fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
     Tree::new(Op::STMT(Box::new(tree))).left(insert_tree)
 }
@@ -114,99 +208,6 @@ fn push_tree(mut tree: Tree, insert_tree: Tree) -> Tree {
     }
 }
 
-pub fn parser(mut cs: Peekable<Chars>) -> Tree {
-    // Abstract syntax tree
-    let mut ast = Tree::new(Op::Nil);
-
-    loop {
-        match cs.peek() {
-            Some(_) => (),
-            None => break,
-        }
-
-        // 複文
-        if is_this(&mut cs, &is::is_new_line) {
-            cs.next();
-            ast = push_stmt(ast, parser(cs));
-            break;
-        }
-
-        // 数字
-        else if is_this(&mut cs, &is::is_num) {
-            let mut num = String::new();
-            while is_this(&mut cs, &is::is_num) {
-                if let Some(c) = cs.next() {
-                    num.push(c);
-                } else {
-                    break;
-                }
-            }
-            ast = push_nv(ast, Op::Lit(num.clone()));
-        }
-
-        // スペース
-        else if is_this(&mut cs, &is::is_space) {
-            while is_this(&mut cs, &is::is_space) {
-                if let Some(_) = cs.next() {
-                } else {
-                    break;
-                }
-            }
-        }
-
-        // 演算子
-        else if is_this(&mut cs, &is::is_operator) {
-            let mut op = String::new();
-            while is_this(&mut cs, &is::is_operator) {
-                if let Some(c) = cs.next() {
-                    op.push(c);
-                } else {
-                    break;
-                }
-            }
-            if is::is_operator_sums(&op) {
-                ast = push_op_sums(ast, op.clone());
-            } else if is::is_operator_puroducts(&op) {
-                ast = push_op_products(ast, op.clone());
-            } else if is::is_operator_pows(&op) {
-                ast = push_op_pows(ast, op.clone());
-            } else if is::is_operator_eqls(&op) {
-                ast = push_op_eqls(ast, op.clone());
-            } else if is::is_operator_assign(&op) {
-                ast = push_op_asi(ast, Op::Asi);
-            }
-        }
-
-        // 括弧
-        else if is_this(&mut cs, &is::is_first_bracket) {
-            ast = push_tree(ast, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
-        }
-
-        // 関数 (変数)
-        else if is_this(&mut cs, &is::is_alphabet) {
-            let mut ob = String::new();
-            while is_this(&mut cs, &is::is_alphabet) {
-                if let Some(c) = cs.next() {
-                    ob.push(c);
-                } else {
-                    break;
-                }
-            }
-
-            // 関数
-            if is_this(&mut cs, &is::is_first_bracket) {
-                ast = push_fun(ast, ob.clone(), parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
-
-            // 予約語
-
-            // 変数
-            } else {
-                ast = push_nv(ast, Op::Val(ob.clone()));
-            }
-        }
-    }
-    ast
-}
 
 fn is_this(cs: &mut Peekable<Chars>, f: &Fn(&char)->bool) -> bool {
     match cs.peek() {

@@ -69,6 +69,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 予約語
             } else if is::is_reserved_word(&ob) {
+                let closure = String::new();
 
             // 変数
             } else {

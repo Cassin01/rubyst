@@ -21,7 +21,7 @@ pub enum Op<T> {
     ROp(T), // Relational operator
     Lit(T),
     Val(T),
-    STMT(Box<Tree>),
+    STMT, // statement
 }
 
 pub trait TreeInsert<T> {

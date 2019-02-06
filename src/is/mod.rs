@@ -1,5 +1,6 @@
 use std::iter::Peekable;
 use std::str::Chars;
+
 pub fn is_this(cs: &mut Peekable<Chars>, f: &Fn(&char)->bool) -> bool {
     match cs.peek() {
         Some(c) => f(&c),

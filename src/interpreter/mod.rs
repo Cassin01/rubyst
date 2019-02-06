@@ -37,14 +37,14 @@ fn evaluate(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
         Op::Pow     => adapt_funci(tree, &functions::pow, vvs),
         Op::ROp(_)  => adapt_funcb(tree, &rop, vvs),
         Op::Fun(_)  => adapt_funcf(tree, vvs),
-        Op::STMT(_) => adapt_func_stmt(tree, vvs),
+        Op::STMT    => adapt_func_stmt(tree, vvs),
         Op::Val(x)  => Type::Val(x),
         Op::Asi     => adapt_func_assi(tree, vvs),
         Op::Nil     => evaluate(Tree::extract_option(tree.left), vvs),
     }
 }
 
-fn p(t: Type, vvs: &HashMap<String, Type>) -> Type{
+fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
     match t {
         Type::Int(x)  => println!("{}", x),
         Type::Bool(x) => println!("{}", x),
@@ -65,9 +65,9 @@ fn adapt_func_assi(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
 }
 
 fn adapt_func_stmt(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
-    if let Op::STMT(stmt) = tree.root {
-        evaluate(*stmt, vvs);
-        evaluate(Tree::extract_option(tree.left), vvs)
+    if let Op::STMT = tree.root {
+        evaluate(Tree::extract_option(tree.left), vvs);
+        evaluate(Tree::extract_option(tree.right), vvs)
     } else {
         panic!("This is not statement");
     }
@@ -105,11 +105,12 @@ fn adapt_funci(tree: Tree, f: &Fn(i64, i64)-> i64, vvs: &mut HashMap<String, Typ
             if let Int(l) = vvs[&left] {
                 match evaluate(Tree::extract_option(tree.right), vvs) {
                     Int(right) => Int(f(l, right)),
-                    Val(right) => if let Int(r) = vvs[&right] {
-                        Int(f(l, r))
-                    } else {
-                        panic!("not int");
-                    },
+                    Val(right) =>
+                        if let Int(r) = vvs[&right] {
+                            Int(f(l, r))
+                        } else {
+                            panic!("not int");
+                        },
                     _ => panic!("not int"),
                 }
             } else {

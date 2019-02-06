@@ -182,10 +182,36 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             op.clear();
         }
 
-        // 括弧
+        /* // 元の括弧
         else if is_this(&mut cs, &is::is_first_bracket) {
             cs.next();
             while !is_this(&mut cs, &is::is_second_bracket) {
+                if let Some(c) = cs.next() {
+                    code_in_brackets.push(c);
+                } else {
+                    break;
+                }
+            }
+            cs.next();
+            ast = push_tree(ast, parser(code_in_brackets.clone().chars().peekable()));
+            code_in_brackets.clear();
+        }
+        */
+
+        // 括弧
+        else if is_this(&mut cs, &is::is_first_bracket) {
+            cs.next();
+            let mut bracket_num = 1;
+            loop {
+                if is_this(&mut cs, &is::is_first_bracket) {
+                    bracket_num += 1;
+                }
+                else if is_this(&mut cs, &is::is_second_bracket) {
+                    bracket_num -= 1;
+                    if bracket_num == 0 {
+                        break;
+                    }
+                }
                 if let Some(c) = cs.next() {
                     code_in_brackets.push(c);
                 } else {
@@ -207,10 +233,35 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                 }
             }
 
-            // 関数
+            // 元の予約語
+            /*
             if is_this(&mut cs, &is::is_first_bracket) {
                 cs.next();
                 while !is_this(&mut cs, &is::is_second_bracket) {
+                    if let Some(c) = cs.next() {
+                        code_in_brackets.push(c);
+                    } else {
+                        break;
+                    }
+                }
+                cs.next();
+                ast = push_fun(ast, ob.clone(), parser(code_in_brackets.clone().chars().peekable()));
+                code_in_brackets.clear();
+            */
+
+            // 関数
+            if is_this(&mut cs, &is::is_first_bracket) {
+                cs.next();
+                let mut bracket_num = 1;
+                loop {
+                    if is_this(&mut cs, &is::is_first_bracket) {
+                        bracket_num += 1;
+                    } else if is_this(&mut cs, &is::is_second_bracket) {
+                        bracket_num -= 1;
+                        if bracket_num == 0 {
+                            break;
+                        }
+                    }
                     if let Some(c) = cs.next() {
                         code_in_brackets.push(c);
                     } else {

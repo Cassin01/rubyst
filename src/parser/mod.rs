@@ -184,26 +184,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 括弧
         else if is_this(&mut cs, &is::is_first_bracket) {
-            cs.next();
-            let mut bracket_num = 1;
-            loop {
-                if is_this(&mut cs, &is::is_first_bracket) {
-                    bracket_num += 1;
-                }
-                else if is_this(&mut cs, &is::is_second_bracket) {
-                    bracket_num -= 1;
-                    if bracket_num == 0 {
-                        break;
-                    }
-                }
-                if let Some(c) = cs.next() {
-                    code_in_brackets.push(c);
-                } else {
-                    break;
-                }
-            }
-            cs.next();
-            ast = push_tree(ast, parser(code_in_brackets.clone().chars().peekable()));
+            ast = push_tree(ast, parser(eat_codes_inbracket(&mut cs).clone().chars().peekable()));
             code_in_brackets.clear();
         }
 
@@ -219,25 +200,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 関数
             if is_this(&mut cs, &is::is_first_bracket) {
-                cs.next();
-                let mut bracket_num = 1;
-                loop {
-                    if is_this(&mut cs, &is::is_first_bracket) {
-                        bracket_num += 1;
-                    } else if is_this(&mut cs, &is::is_second_bracket) {
-                        bracket_num -= 1;
-                        if bracket_num == 0 {
-                            break;
-                        }
-                    }
-                    if let Some(c) = cs.next() {
-                        code_in_brackets.push(c);
-                    } else {
-                        break;
-                    }
-                }
-                cs.next();
-                ast = push_fun(ast, ob.clone(), parser(code_in_brackets.clone().chars().peekable()));
+                ast = push_fun(ast, ob.clone(), parser(eat_codes_inbracket(&mut cs).clone().chars().peekable()));
                 code_in_brackets.clear();
 
             // 変数
@@ -255,4 +218,27 @@ fn is_this(cs: &mut Peekable<Chars>, f: &Fn(&char)->bool) -> bool {
         Some(c) => f(&c),
         None => false,
     }
+}
+
+fn eat_codes_inbracket(cs: &mut Peekable<Chars>) -> String {
+    cs.next();
+    let mut code_in_brackets = String::new();
+    let mut bracket_num = 1;
+    loop {
+        if is_this(cs, &is::is_first_bracket) {
+            bracket_num += 1;
+        } else if is_this(cs, &is::is_second_bracket) {
+            bracket_num -= 1;
+            if bracket_num == 0 {
+                break;
+            }
+        }
+        if let Some(c) = cs.next() {
+            code_in_brackets.push(c);
+        } else {
+            break;
+        }
+    }
+    cs.next();
+    code_in_brackets
 }

@@ -182,22 +182,6 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             op.clear();
         }
 
-        /* // 元の括弧
-        else if is_this(&mut cs, &is::is_first_bracket) {
-            cs.next();
-            while !is_this(&mut cs, &is::is_second_bracket) {
-                if let Some(c) = cs.next() {
-                    code_in_brackets.push(c);
-                } else {
-                    break;
-                }
-            }
-            cs.next();
-            ast = push_tree(ast, parser(code_in_brackets.clone().chars().peekable()));
-            code_in_brackets.clear();
-        }
-        */
-
         // 括弧
         else if is_this(&mut cs, &is::is_first_bracket) {
             cs.next();

@@ -46,7 +46,7 @@ if y == 2
 end
 
 if y < 1
-p(x * 3)
+  p(x * 3)
 end
 
 p(y % 6)

@@ -31,16 +31,23 @@ An Ruby made from Rust.
 |関数||
 | :---: | :---:|
 | print文 | p() |
+| if文 | if ~ end |
 
-変数
 
 ## 記述例
 
 ```main.eld
 (x = 1)
 y = x + 1
-p(x + 2)
-p(x * 3)
+
+if y == 2
+  p(x + 2)
+end
+
+if y < 1
+  p(x * 3)
+end
+
 p(y % 6)
 ```
 

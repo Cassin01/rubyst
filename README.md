@@ -1,11 +1,7 @@
 # Rubyst
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
-Rustで作るRuby
-
-An Ruby made from Rust.
-
+A Ruby Interpreter written in Rust 🦄
 ## 対応している文法
 
 |型||

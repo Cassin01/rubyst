@@ -40,17 +40,7 @@ fn evaluate(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
         Op::STMT    => adapt_func_stmt(tree, vvs),
         Op::Val(x)  => Type::Val(x),
         Op::Asi     => adapt_func_assi(tree, vvs),
-        Op::Nil     => {
-            if tree.left == None && tree.right == None {
-                Type::Nil
-            } else if tree.right == None {
-                evaluate(Tree::extract_option(tree.left), vvs)
-            } else if tree.left == None {
-                evaluate(Tree::extract_option(tree.right), vvs)
-            } else {
-                panic!("dont use Nil at end of tree");
-            }
-        }
+        Op::Nil     => adapt_func_nil(tree, vvs),
     }
 }
 
@@ -62,6 +52,18 @@ fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
         _             => panic!("funciton p is not support type {:?}", t),
     }
     Type::Nil
+}
+
+fn adapt_func_nil(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
+    if tree.left == None && tree.right == None {
+        Type::Nil
+    } else if tree.right == None {
+        evaluate(Tree::extract_option(tree.left), vvs)
+    } else if tree.left == None {
+        evaluate(Tree::extract_option(tree.right), vvs)
+    } else {
+        panic!("dont use Nil at end of tree");
+    }
 }
 
 fn adapt_func_assi(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
@@ -86,29 +88,24 @@ fn adapt_func_stmt(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
 fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
     if let Op::Fun(fun) = tree.root {
         match fun.as_str() {
-            "p" => {
-                p(evaluate(Tree::extract_option(tree.left), vvs), vvs)
-            },
-            "if" => {
+            "p"  => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
+            "if" =>
                 match evaluate(Tree::extract_option(tree.left), vvs) {
-                    Type::Bool(true) => {
+                    Type::Bool(true) =>
                         if let Some(x) = tree.right {
                             evaluate(Tree::extract_option(x.clone().left), vvs);
                             evaluate(Tree::extract_option(x.right), vvs)
                         } else {
                             panic!("this tree.right shoud be exsist");
-                        }
-                    },
-                    Type::Bool(false) => {
+                        },
+                    Type::Bool(false) =>
                         if let Some(x) = tree.right {
                             evaluate(Tree::extract_option(x.right), vvs)
                         } else {
                             panic!("this tree.right shoud be exsist");
-                        }
-                    },
+                        },
                     _ => panic!("not condition"),
-                }
-            }
+                },
             _ => panic!("this function is not supproted"),
         }
     } else {
@@ -155,45 +152,36 @@ fn adapt_funcb(tree: Tree, f: &Fn(String, i64, i64)-> bool, vvs: &mut HashMap<St
     use self::Type::Int;
     use self::Type::Bool;
     use self::Type::Val;
+    fn rb(root: Op<String>, f: &Fn(String, i64, i64) -> bool , l: i64, r: i64) -> Type {
+        if let Op::ROp(op) = root {
+            Bool(f(op, l, r))
+        } else {
+            panic!("not rop");
+        }
+    }
     match evaluate(Tree::extract_option(tree.left), vvs) {
         Int(left) => {
             match evaluate(Tree::extract_option(tree.right), vvs) {
-                Int(right) =>
-                        if let Op::ROp(op) = tree.root {
-                            Bool(f(op, left, right))
-                        } else {
-                            panic!("not rop");
-                        }
-                Val(right) => if let Int(r) = vvs[&right] {
-                    if let Op::ROp(op) = tree.root {
-                        Bool(f(op, left, r))
+                Int(right) => rb(tree.root, f, left, right),
+                Val(right) =>
+                    if let Int(r) = vvs[&right] {
+                        rb(tree.root, f, left, r)
                     } else {
-                        panic!("not rop");
-                    }
-                } else {
-                    panic!("not int");
-                },
+                        panic!("not int");
+                    },
                 _ => panic!("not int"),
             }
         }
         Val(left) => {
             if let Int(l) = vvs[&left] {
                 match evaluate(Tree::extract_option(tree.right), vvs) {
-                    Int(right) =>
-                        if let Op::ROp(op) = tree.root {
-                            Bool(f(op, l, right))
+                    Int(right) => rb(tree.root, f, l, right),
+                    Val(right) =>
+                        if let Int(r) = vvs[&right] {
+                            rb(tree.root, f, l, r)
                         } else {
-                            panic!("not rop");
-                        }
-                    Val(right) => if let Int(r) = vvs[&right] {
-                        if let Op::ROp(op) = tree.root {
-                            Bool(f(op, l, r))
-                        } else {
-                            panic!("not rop");
-                        }
-                    } else {
-                        panic!("not int");
-                    },
+                            panic!("not int");
+                        },
                     _ => panic!("not int"),
                 }
             } else {

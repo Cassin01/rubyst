@@ -33,7 +33,6 @@ An Ruby made from Rust.
 | print文 | p() |
 | if文 | if ~ end |
 
-変数
 
 ## 記述例
 

@@ -4,7 +4,6 @@ use super::super::tree::Tree;
 use super::super::tree::Op;
 
 pub fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
-    //Tree::new(Op::STMT(Box::new(tree))).left(insert_tree)
     Tree::new(Op::STMT).left(tree).right(insert_tree)
 }
 
@@ -12,7 +11,9 @@ pub fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
         tree.root(Op::Fun(fnc)).left(insert_tree)
     } else {
-        Tree::new(Op::Fun(fnc)).left(tree).left(insert_tree)
+        //panic!("undefined medthod tree.root for {:?} (NoMethodError)", tree.root);
+        push_tree(tree, Tree::new(Op::Fun(fnc)).left(insert_tree))
+        //Tree::new(Op::Fun(fnc)).left(tree).left(insert_tree)
     }
 }
 
@@ -47,17 +48,16 @@ pub fn push_op_eqls(tree: Tree, op: String) -> Tree {
 
 pub fn push_op_sums(tree: Tree, op: String)
     -> Tree {
-        match tree.root {
-            Op::Nil => tree.root(Tree::enum_op(op)),
-            //Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) =>
-            Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) =>
-                        Tree::new(tree.root)
-                        .left(tree.left)
-                        .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
-            Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
-                Tree::new(Tree::enum_op(op)).left(tree),
-            Op::Val(_) | Op::Lit(_) => panic!("not operator"),
-        }
+    match tree.root {
+        Op::Nil => tree.root(Tree::enum_op(op)),
+        Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) =>
+                    Tree::new(tree.root)
+                    .left(tree.left)
+                    .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
+        Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
+            Tree::new(Tree::enum_op(op)).left(tree),
+        Op::Val(_) | Op::Lit(_) => panic!("not operator"),
+    }
 }
 
 pub fn push_op_products(tree: Tree, op: String)
@@ -65,7 +65,6 @@ pub fn push_op_products(tree: Tree, op: String)
     match tree.root {
         Op::Nil
             => tree.root(Tree::enum_op(op)),
-        //Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg
         Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg
             => Tree::new(tree.root)
                     .left(tree.left)
@@ -82,7 +81,6 @@ pub fn push_op_pows(tree: Tree, op: String)
         match tree.root {
             Op::Nil
                 => tree.root(Tree::enum_op(op)),
-            //Op::Asi | Op::STMT(_) | Op::Fun(_) | Op::ROp(_) | Op::Add |
             Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) | Op::Add |
             Op::Neg | Op::Mul | Op::Div | Op::Rem
                 => Tree::new(tree.root)

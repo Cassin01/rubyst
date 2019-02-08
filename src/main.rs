@@ -7,10 +7,12 @@ mod parser;
 fn main() {
     let code = read_code::read_code();
     let ast = parser::parser(code.chars().peekable());
-    read_tree(&ast, 0, 2);
+    //read_tree(&ast, 0, 2);
+    // println!("{:?}", ast);
     interpreter::interpret(ast);
 }
 
+/*
 fn read_tree(tree: &tree::Tree, u: usize, indent: usize) {
     println!("{}{:?}", " ".repeat(u), tree.root);
     if let Some(ref x) = tree.left {
@@ -20,3 +22,4 @@ fn read_tree(tree: &tree::Tree, u: usize, indent: usize) {
         read_tree(x, u + indent, indent);
     }
 }
+*/

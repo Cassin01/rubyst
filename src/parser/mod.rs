@@ -1,6 +1,7 @@
 mod push;
 use super::tree::Tree;
 use super::tree::Op;
+use super::tree::TreeInsert;
 use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
@@ -69,7 +70,13 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 予約語
             } else if is::is_reserved_word(&ob) {
-                let closure = String::new();
+                let condition = eat_condition(&mut cs);
+                let in_if = eat_in_if(&mut cs);
+                if ast.root == Op::Nil {
+                    ast = push::push_stmt(ast, Tree::new(Op::Fun(ob)).left(parser(condition.chars().peekable())).right(parser(in_if.chars().peekable())));
+                } else {
+                    panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                }
 
             // 変数
             } else {
@@ -90,6 +97,58 @@ fn make_name(cs: &mut Peekable<Chars>, is: &Fn(&char)->bool) -> String {
         }
     }
     name
+}
+
+fn eat_condition(cs: &mut Peekable<Chars>) -> String {
+    let mut condition = String::new();
+    loop {
+        if is::is_this(cs, &is::is_new_line) {
+            cs.next();
+            break;
+        } else {
+            if let Some(c) = cs.next() {
+                condition.push(c);
+            } else {
+                panic!("there is no ");
+            }
+        }
+    }
+    condition
+}
+
+fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
+    let mut closure = String::new();
+    let mut word = String::new();
+    loop {
+        if is::is_this(cs, &is::is_space) {
+            if let Some(c) = cs.next() {
+                word.push(c);
+            } else {
+                panic!("this is not space");
+            }
+            closure.push_str(&word);
+            word.clear();
+        } else if is::is_this(cs, &is::is_new_line) {
+            if word == String::from("end") {
+                cs.next();
+                return closure
+            } else {
+                if let Some(c) = cs.next() {
+                    word.push(c);
+                } else {
+                    panic!("there is no end");
+                }
+                closure.push_str(&word);
+                word.clear();
+            }
+        } else {
+            if let Some(c) = cs.next() {
+                word.push(c);
+            } else {
+                return closure
+            }
+        }
+    }
 }
 
 fn eat_codes_in_bracket(cs: &mut Peekable<Chars>) -> String {

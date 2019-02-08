@@ -40,7 +40,17 @@ fn evaluate(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
         Op::STMT    => adapt_func_stmt(tree, vvs),
         Op::Val(x)  => Type::Val(x),
         Op::Asi     => adapt_func_assi(tree, vvs),
-        Op::Nil     => evaluate(Tree::extract_option(tree.left), vvs),
+        Op::Nil     => {
+            if tree.left == None && tree.right == None {
+                Type::Nil
+            } else if tree.right == None {
+                evaluate(Tree::extract_option(tree.left), vvs)
+            } else if tree.left == None {
+                evaluate(Tree::extract_option(tree.right), vvs)
+            } else {
+                panic!("dont use Nil at end of tree");
+            }
+        }
     }
 }
 
@@ -78,6 +88,26 @@ fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
         match fun.as_str() {
             "p" => {
                 p(evaluate(Tree::extract_option(tree.left), vvs), vvs)
+            },
+            "if" => {
+                match evaluate(Tree::extract_option(tree.left), vvs) {
+                    Type::Bool(true) => {
+                        if let Some(x) = tree.right {
+                            evaluate(Tree::extract_option(x.clone().left), vvs);
+                            evaluate(Tree::extract_option(x.right), vvs)
+                        } else {
+                            panic!("this tree.right shoud be exsist");
+                        }
+                    },
+                    Type::Bool(false) => {
+                        if let Some(x) = tree.right {
+                            evaluate(Tree::extract_option(x.right), vvs)
+                        } else {
+                            panic!("this tree.right shoud be exsist");
+                        }
+                    },
+                    _ => panic!("not condition"),
+                }
             }
             _ => panic!("this function is not supproted"),
         }

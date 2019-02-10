@@ -6,3 +6,4 @@ if x == 2
     end
 end
 p(3)
+p(4)

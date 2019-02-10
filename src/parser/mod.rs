@@ -73,7 +73,16 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                 let condition = eat_condition(&mut cs);
                 let in_if = eat_in_if(&mut cs);
                 if ast.root == Op::Nil {
+                    if ast.left == None {
+                        ast = ast.root(Op::Fun(ob)).left(parser(condition.chars().peekable())).right(parser(in_if.chars().peekable()));
+                        ast = push::push_stmt(ast, parser(cs));
+                        break;
+                    } else {
+                        panic!("if can't return value ");
+                    }
+                    /*
                     ast = push::push_stmt(ast, Tree::new(Op::Fun(ob)).left(parser(condition.chars().peekable())).right(parser(in_if.chars().peekable())));
+                    */
                 } else {
                     panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
                 }
@@ -146,6 +155,8 @@ fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
                 } else {
                     eat_and_flesh(cs, &mut closure, &mut word);
                 }
+            } else if word == String::from("else") {
+
             } else {
                 eat_and_flesh(cs, &mut closure, &mut word);
             }

@@ -80,9 +80,6 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                     } else {
                         panic!("if can't return value ");
                     }
-                    /*
-                    ast = push::push_stmt(ast, Tree::new(Op::Fun(ob)).left(parser(condition.chars().peekable())).right(parser(in_if.chars().peekable())));
-                    */
                 } else {
                     panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
                 }

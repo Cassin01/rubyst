@@ -50,10 +50,12 @@ p(y % 6)
 ```
 
 ## 開発指針
-### 全体
 コードはできるだけ綺麗にするけど開発の速さのためには妥協もする
-### 木構造
-tree.rootにType::Nilがあるときtree.leftがNoneであることが望ましい。
+## 木構造について
+## 望ましいこと
+tree.rootがType::Nilであるときtree.leftがOption::Noneであること
+## あってはならないこと
+tree.rootがType::Nilであるときtree.rightがOption::Some(_)であること
 
 ## 参考
 遠藤侑介 RubyでつくるRuby ラムダノート株式会社

@@ -51,10 +51,10 @@ p(y % 6)
 
 ## 開発指針
 コードはできるだけ綺麗にするけど開発の速さのためには妥協もする
-## 抽象構文木において
+## このrubystインタプリタで用いたれる抽象構文木において
 ### 望ましいこと
 tree.rootがType::Nilであるときtree.leftがOption::Noneであること
-### あってはならないこと
+### アンチパターン
 tree.rootがType::Nilであるときtree.rightがOption::Noneでないこと
 
 ## 参考

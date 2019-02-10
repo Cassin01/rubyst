@@ -52,10 +52,16 @@ p(y % 6)
 ## 開発指針
 コードはできるだけ綺麗にするけど開発の速さのためには妥協もする
 ## このrubystインタプリタで用いられる抽象構文木において
+
 ### 望ましいこと
 tree.rootがType::Nilであるときtree.leftがOption::Noneであること
+
+&rarr; 実行速度が遅くなるため
+
 ### アンチパターン
 tree.rootがType::Nilであるときtree.rightがOption::Noneでないこと
+
+&rarr; 複雑度が上がり、開発者が潜在的なバグを予測できなくなるため
 
 ## 参考
 遠藤侑介 RubyでつくるRuby ラムダノート株式会社

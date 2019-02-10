@@ -52,9 +52,9 @@ p(y % 6)
 ## 開発指針
 コードはできるだけ綺麗にするけど開発の速さのためには妥協もする
 ## 木構造について
-## 望ましいこと
+### 望ましいこと
 tree.rootがType::Nilであるときtree.leftがOption::Noneであること
-## あってはならないこと
+### あってはならないこと
 tree.rootがType::Nilであるときtree.rightがOption::Some(_)であること
 
 ## 参考

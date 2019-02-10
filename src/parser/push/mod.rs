@@ -11,9 +11,7 @@ pub fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
         tree.root(Op::Fun(fnc)).left(insert_tree)
     } else {
-        //panic!("undefined medthod tree.root for {:?} (NoMethodError)", tree.root);
         push_tree(tree, Tree::new(Op::Fun(fnc)).left(insert_tree))
-        //Tree::new(Op::Fun(fnc)).left(tree).left(insert_tree)
     }
 }
 

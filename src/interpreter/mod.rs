@@ -49,7 +49,7 @@ fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
         Type::Int(x)  => println!("{}", x),
         Type::Bool(x) => println!("{}", x),
         Type::Val(x)  => return p(vvs[&x].clone(), vvs),
-        _             => panic!("funciton p is not support type {:?}", t),
+        Type::Nil   => (),
     }
     Type::Nil
 }

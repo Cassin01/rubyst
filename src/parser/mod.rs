@@ -119,8 +119,13 @@ fn eat_condition(cs: &mut Peekable<Chars>) -> String {
 fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
     let mut closure = String::new();
     let mut word = String::new();
+    let mut if_num = 1;
     loop {
         if is::is_this(cs, &is::is_space) {
+            if word == String::from("if") {
+                if_num += 1;
+            }
+
             if let Some(c) = cs.next() {
                 word.push(c);
             } else {
@@ -130,8 +135,20 @@ fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
             word.clear();
         } else if is::is_this(cs, &is::is_new_line) {
             if word == String::from("end") {
-                cs.next();
-                return closure
+                if_num -= 1;
+                if if_num == 0 {
+                    cs.next();
+                    println!("{}", closure);
+                    return closure
+                } else {
+                    if let Some(c) = cs.next() {
+                        word.push(c);
+                    } else {
+                        panic!("there is no end");
+                    }
+                    closure.push_str(&word);
+                    word.clear();
+                }
             } else {
                 if let Some(c) = cs.next() {
                     word.push(c);
@@ -145,7 +162,8 @@ fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
             if let Some(c) = cs.next() {
                 word.push(c);
             } else {
-                return closure
+                panic!("code was end without 'end' idnetifer");
+                //return closure
             }
         }
     }

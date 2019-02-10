@@ -55,7 +55,7 @@ p(y % 6)
 ### 望ましいこと
 tree.rootがType::Nilであるときtree.leftがOption::Noneであること
 ### あってはならないこと
-tree.rootがType::Nilであるときtree.rightがOption::Some(_)であること
+tree.rootがType::Nilであるときtree.rightがOption::Noneでないこと
 
 ## 参考
 遠藤侑介 RubyでつくるRuby ラムダノート株式会社

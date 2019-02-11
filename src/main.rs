@@ -8,7 +8,6 @@ fn main() {
     let code = read_code::read_code();
     let ast = parser::parser(code.chars().peekable());
     read_tree(&ast, 0, 2, String::from("H"));
-    //println!("{:?}", ast);
     interpreter::interpret(ast);
 }
 

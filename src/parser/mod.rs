@@ -71,17 +71,43 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
             // 予約語
             } else if is::is_reserved_word(&ob) {
                 let condition = eat_condition(&mut cs);
-                let in_if = eat_in_if(&mut cs);
-                if ast.root == Op::Nil {
-                    if ast.left == None {
-                        ast = ast.root(Op::Fun(ob)).left(parser(condition.chars().peekable())).right(parser(in_if.chars().peekable()));
-                        ast = push::push_stmt(ast, parser(cs));
-                        break;
+                let mut if_num = 1;
+                let in_if = eat_in_if(&mut cs, &mut if_num);
+                if if_num == 1 {
+                    let in_else = eat_in_if(&mut cs, &mut if_num);
+                    let else_tree = Tree::new(Op::Fun(String::from("else"))).left(parser(in_if.chars().peekable())).right(parser(in_else.chars().peekable()));
+
+                    if ast.root == Op::Nil {
+                        if ast.left == None {
+                            ast = ast.root(Op::Fun(ob))
+                                        .left(parser(condition.chars().peekable()))
+                                        .right(else_tree);
+                            // if 終了後改行が呼ばれないのでここで呼ぶ
+                            ast = push::push_stmt(ast, parser(cs));
+                            break;
+                        } else {
+                            panic!("if can't return value ");
+                        }
                     } else {
-                        panic!("if can't return value ");
+                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
                     }
+
+
                 } else {
-                    panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                    if ast.root == Op::Nil {
+                        if ast.left == None {
+                            ast = ast.root(Op::Fun(ob))
+                                    .left(parser(condition.chars().peekable()))
+                                    .right(parser(in_if.chars().peekable()));
+                            // if 終了後改行が呼ばれないのでここで呼ぶ
+                            ast = push::push_stmt(ast, parser(cs));
+                            break;
+                        } else {
+                            panic!("if can't return value ");
+                        }
+                    } else {
+                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                    }
                 }
 
             // 変数
@@ -122,38 +148,58 @@ fn eat_condition(cs: &mut Peekable<Chars>) -> String {
     condition
 }
 
-fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
+fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
     let mut closure = String::new();
     let mut word = String::new();
-    let mut if_num = 1;
 
     fn eat_and_flesh(cs: &mut Peekable<Chars>, closure: &mut String, word: &mut String) {
-            if let Some(c) = cs.next() {
-                word.push(c);
-            } else {
-                panic!("this is not space");
-            }
-            closure.push_str(&word);
-            word.clear();
+        if let Some(c) = cs.next() {
+            word.push(c);
+        } else {
+            panic!("this is not space");
+        }
+        closure.push_str(&word);
+        word.clear();
     }
 
     loop {
         if is::is_this(cs, &is::is_space) {
             if word == String::from("if") {
-                if_num += 1;
-            }
-            eat_and_flesh(cs, &mut closure, &mut word);
-        } else if is::is_this(cs, &is::is_new_line) {
-            if word == String::from("end") {
-                if_num -= 1;
-                if if_num == 0 {
+                *if_num += 1;
+            } else if word == String::from("end") {
+                *if_num -= 1;
+                if *if_num == 0 {
                     cs.next();
                     return closure
                 } else {
                     eat_and_flesh(cs, &mut closure, &mut word);
                 }
             } else if word == String::from("else") {
-
+                if *if_num == 1 {
+                    cs.next();
+                    return closure
+                } else {
+                    eat_and_flesh(cs, &mut closure, &mut word);
+                }
+            } else {
+                eat_and_flesh(cs, &mut closure, &mut word);
+            }
+        } else if is::is_this(cs, &is::is_new_line) {
+            if word == String::from("end") {
+                *if_num -= 1;
+                if *if_num == 0 {
+                    cs.next();
+                    return closure
+                } else {
+                    eat_and_flesh(cs, &mut closure, &mut word);
+                }
+            } else if word == String::from("else") {
+                if *if_num == 1 {
+                    cs.next();
+                    return closure
+                } else {
+                    eat_and_flesh(cs, &mut closure, &mut word);
+                }
             } else {
                 eat_and_flesh(cs, &mut closure, &mut word);
             }
@@ -161,7 +207,17 @@ fn eat_in_if(cs: &mut Peekable<Chars>) -> String {
             if let Some(c) = cs.next() {
                 word.push(c);
             } else {
-                panic!("code was end without 'end' idnetifer");
+                if word == String::from("end") {
+                    *if_num -= 1;
+                    if *if_num == 0 {
+                        cs.next();
+                        return closure
+                    } else {
+                        panic!("code was end without 'end' idnetifer");
+                    }
+                } else {
+                    panic!("code was end without 'end' idnetifer");
+                }
             }
         }
     }

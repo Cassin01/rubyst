@@ -86,10 +86,11 @@ fn adapt_func_stmt(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
 }
 
 fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
-    if let Op::Fun(fun) = tree.root {
+    if let Op::Fun(fun) = tree.root.clone() {
         match fun.as_str() {
             "p"  => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
-            "if" =>
+            "if" => f_if(tree, vvs),
+                /*
                 match evaluate(Tree::extract_option(tree.left), vvs) {
                     Type::Bool(true) =>
                         if let Some(x) = tree.right {
@@ -100,12 +101,14 @@ fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
                         },
                     Type::Bool(false) =>
                         if let Some(x) = tree.right {
-                            evaluate(Tree::extract_option(x.right), vvs)
+                            Type::Nil
+                            //evaluate(Tree::extract_option(x.right), vvs)
                         } else {
                             panic!("this tree.right shoud be exsist");
                         },
                     _ => panic!("not condition"),
                 },
+                */
             _ => panic!("this function is not supproted"),
         }
     } else {
@@ -201,5 +204,35 @@ fn rop(op: String, l: i64, r: i64) -> bool {
         ">"  =>  functions::gt(l, r),
         ">=" => !functions::lt(l, r),
         _    => panic!("not operation"),
+    }
+}
+
+fn f_if(tree: Tree, vvs: &mut HashMap<String, Type>)  -> Type {
+    if let Some(t) = tree.right {
+        match t.root {
+            Op::STMT | Op::Nil =>
+                match evaluate(Tree::extract_option(tree.left), vvs) {
+                    Type::Bool(true) => evaluate(*t, vvs),
+                    Type::Bool(false) => return Type::Nil,
+                    _ => panic!("not condition"),
+                },
+            Op::Fun(_) => // else
+                match evaluate(Tree::extract_option(tree.left), vvs) {
+                    Type::Bool(true) => evaluate(Tree::extract_option(t.left), vvs),
+                    Type::Bool(false) => evaluate(Tree::extract_option(t.right), vvs),
+                    _ => panic!("not condition"),
+                },
+            y => panic!("Op {:?} is not supported", y),
+        }
+        /*
+        match evaluate(Tree::extract_option(tree.left), vvs) {
+            Type::Bool(true) => evaluate(*t, vvs),
+            Type::Bool(false) => return Type::Nil,
+            _ => panic!("not condition"),
+        }
+        */
+    } else {
+        panic!("this tree.right shoud be exsist");
+
     }
 }

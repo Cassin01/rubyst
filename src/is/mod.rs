@@ -10,7 +10,7 @@ pub fn is_this(cs: &mut Peekable<Chars>, f: &Fn(&char)->bool) -> bool {
 
 pub fn is_num(c: &char) -> bool {
     match c {
-        '1' ... '9' => true,
+        '0' ... '9' => true,
                 _   => false
     }
 }
@@ -38,6 +38,8 @@ pub fn is_operator(c: &char) -> bool {
         '+' => true,
         '=' => true,
         '!' => true,
+        '>' => true,
+        '<' => true,
         _   => false,
     }
 }
@@ -91,7 +93,11 @@ pub fn is_operator_eqls(s: &String) -> bool {
     match s.as_str() {
         "==" => true,
         "!=" => true,
-        _    => false,
+        ">=" => true,
+        "<=" => true,
+        ">" => true,
+        "<" => true,
+        _   => false,
     }
 }
 

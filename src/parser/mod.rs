@@ -1,4 +1,5 @@
 mod push;
+mod eat;
 use super::tree::Tree;
 use super::tree::Op;
 use super::tree::TreeInsert;
@@ -51,12 +52,14 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                 ast = push::push_op_eqls(ast, op.clone());
             } else if is::is_operator_assign(&op) {
                 ast = push::push_op_asi(ast, Op::Asi);
+            } else {
+                panic!("oprator {:?} is not supported", op);
             }
         }
 
         // 括弧
         else if is::is_this(&mut cs, &is::is_first_bracket) {
-            ast = push::push_tree(ast, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+            ast = push::push_tree(ast, parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
         }
 
         // 関数, 変数
@@ -66,15 +69,15 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 関数
             if is::is_this(&mut cs, &is::is_first_bracket) {
-                ast = push::push_fun(ast, ob, parser(eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+                ast = push::push_fun(ast, ob, parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
 
             // 予約語
             } else if is::is_reserved_word(&ob) {
-                let condition = eat_condition(&mut cs);
+                let condition = eat::eat_condition(&mut cs);
                 let mut if_num = 1;
-                let in_if = eat_in_if(&mut cs, &mut if_num);
+                let in_if = eat::eat_in_if(&mut cs, &mut if_num);
                 if if_num == 1 {
-                    let in_else = eat_in_if(&mut cs, &mut if_num);
+                    let in_else = eat::eat_in_if(&mut cs, &mut if_num);
                     let else_tree = Tree::new(Op::Fun(String::from("else"))).left(parser(in_if.chars().peekable())).right(parser(in_else.chars().peekable()));
 
                     if ast.root == Op::Nil {
@@ -129,119 +132,4 @@ fn make_name(cs: &mut Peekable<Chars>, is: &Fn(&char)->bool) -> String {
         }
     }
     name
-}
-
-fn eat_condition(cs: &mut Peekable<Chars>) -> String {
-    let mut condition = String::new();
-    loop {
-        if is::is_this(cs, &is::is_new_line) {
-            cs.next();
-            break;
-        } else {
-            if let Some(c) = cs.next() {
-                condition.push(c);
-            } else {
-                panic!("there is no ");
-            }
-        }
-    }
-    condition
-}
-
-fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
-    let mut closure = String::new();
-    let mut word = String::new();
-
-    fn eat_and_flesh(cs: &mut Peekable<Chars>, closure: &mut String, word: &mut String) {
-        if let Some(c) = cs.next() {
-            word.push(c);
-        } else {
-            panic!("this is not space");
-        }
-        closure.push_str(&word);
-        word.clear();
-    }
-
-    loop {
-        if is::is_this(cs, &is::is_space) {
-            if word == String::from("if") {
-                *if_num += 1;
-            } else if word == String::from("end") {
-                *if_num -= 1;
-                if *if_num == 0 {
-                    cs.next();
-                    return closure
-                } else {
-                    eat_and_flesh(cs, &mut closure, &mut word);
-                }
-            } else if word == String::from("else") {
-                if *if_num == 1 {
-                    cs.next();
-                    return closure
-                } else {
-                    eat_and_flesh(cs, &mut closure, &mut word);
-                }
-            } else {
-                eat_and_flesh(cs, &mut closure, &mut word);
-            }
-        } else if is::is_this(cs, &is::is_new_line) {
-            if word == String::from("end") {
-                *if_num -= 1;
-                if *if_num == 0 {
-                    cs.next();
-                    return closure
-                } else {
-                    eat_and_flesh(cs, &mut closure, &mut word);
-                }
-            } else if word == String::from("else") {
-                if *if_num == 1 {
-                    cs.next();
-                    return closure
-                } else {
-                    eat_and_flesh(cs, &mut closure, &mut word);
-                }
-            } else {
-                eat_and_flesh(cs, &mut closure, &mut word);
-            }
-        } else {
-            if let Some(c) = cs.next() {
-                word.push(c);
-            } else {
-                if word == String::from("end") {
-                    *if_num -= 1;
-                    if *if_num == 0 {
-                        cs.next();
-                        return closure
-                    } else {
-                        panic!("code was end without 'end' idnetifer");
-                    }
-                } else {
-                    panic!("code was end without 'end' idnetifer");
-                }
-            }
-        }
-    }
-}
-
-fn eat_codes_in_bracket(cs: &mut Peekable<Chars>) -> String {
-    cs.next();
-    let mut code_in_brackets = String::new();
-    let mut bracket_num = 1;
-    loop {
-        if is::is_this(cs, &is::is_first_bracket) {
-            bracket_num += 1;
-        } else if is::is_this(cs, &is::is_second_bracket) {
-            bracket_num -= 1;
-            if bracket_num == 0 {
-                break;
-            }
-        }
-        if let Some(c) = cs.next() {
-            code_in_brackets.push(c);
-        } else {
-            break;
-        }
-    }
-    cs.next();
-    code_in_brackets
 }

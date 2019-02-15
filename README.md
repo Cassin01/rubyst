@@ -2,6 +2,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Ruby Interpreter written in Rust 🦄
+
+# 注意
+
+- データ構造が複雑
+- 作者が個人的にRubyの構文よりもPythonの構文の方が好き
+
+の二点の理由からこのリポジトリでの開発は中止しました。
+Python構文での再開発を考えています。
+
 ## 対応している文法
 
 |型||

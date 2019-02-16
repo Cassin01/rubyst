@@ -108,9 +108,23 @@ pub fn is_operator_assign(s: &String) -> bool {
     }
 }
 
-pub fn is_reserved_word(s: &String) -> bool {
+pub fn reserved_function(s: &String) -> bool {
     match s.as_str() {
         "if" => true,
         _    => false,
+    }
+}
+
+pub fn reserved_if(s: &String) -> bool {
+    match s.as_str() {
+        "if" => true,
+        _    => false,
+    }
+}
+
+pub fn reserved_while(s: &String) -> bool {
+    match s.as_str() {
+        "while" => true,
+        _       => false,
     }
 }

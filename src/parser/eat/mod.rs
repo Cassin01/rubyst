@@ -23,20 +23,11 @@ pub fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
     let mut closure = String::new();
     let mut word = String::new();
 
-    fn eat_and_flesh(cs: &mut Peekable<Chars>, closure: &mut String, word: &mut String) {
-        if let Some(c) = cs.next() {
-            word.push(c);
-        } else {
-            panic!("this is not space");
-        }
-        closure.push_str(&word);
-        word.clear();
-    }
-
     loop {
         if is::is_this(cs, &is::is_space) {
             if word == String::from("if") {
                 *if_num += 1;
+                eat_and_flesh(cs, &mut closure, &mut word);
             } else if word == String::from("end") {
                 *if_num -= 1;
                 if *if_num == 0 {
@@ -92,6 +83,16 @@ pub fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
             }
         }
     }
+}
+
+fn eat_and_flesh(cs: &mut Peekable<Chars>, closure: &mut String, word: &mut String) {
+    if let Some(c) = cs.next() {
+        word.push(c);
+    } else {
+        panic!("this is not space");
+    }
+    closure.push_str(&word);
+    word.clear();
 }
 
 pub fn eat_codes_in_bracket(cs: &mut Peekable<Chars>) -> String {

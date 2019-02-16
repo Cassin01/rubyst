@@ -1,8 +1,8 @@
 mod push;
 mod eat;
+mod reserved_functions;
 use super::tree::Tree;
 use super::tree::Op;
-use super::tree::TreeInsert;
 use super::is;
 use std::iter::Peekable;
 use std::str::Chars;
@@ -72,46 +72,9 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
                 ast = push::push_fun(ast, ob, parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
 
             // 予約語
-            } else if is::is_reserved_word(&ob) {
-                let condition = eat::eat_condition(&mut cs);
-                let mut if_num = 1;
-                let in_if = eat::eat_in_if(&mut cs, &mut if_num);
-                if if_num == 1 {
-                    let in_else = eat::eat_in_if(&mut cs, &mut if_num);
-                    let else_tree = Tree::new(Op::Fun(String::from("else"))).left(parser(in_if.chars().peekable())).right(parser(in_else.chars().peekable()));
-
-                    if ast.root == Op::Nil {
-                        if ast.left == None {
-                            ast = ast.root(Op::Fun(ob))
-                                        .left(parser(condition.chars().peekable()))
-                                        .right(else_tree);
-                            // if 終了後改行が呼ばれないのでここで呼ぶ
-                            ast = push::push_stmt(ast, parser(cs));
-                            break;
-                        } else {
-                            panic!("if can't return value ");
-                        }
-                    } else {
-                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
-                    }
-
-
-                } else {
-                    if ast.root == Op::Nil {
-                        if ast.left == None {
-                            ast = ast.root(Op::Fun(ob))
-                                    .left(parser(condition.chars().peekable()))
-                                    .right(parser(in_if.chars().peekable()));
-                            // if 終了後改行が呼ばれないのでここで呼ぶ
-                            ast = push::push_stmt(ast, parser(cs));
-                            break;
-                        } else {
-                            panic!("if can't return value ");
-                        }
-                    } else {
-                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
-                    }
-                }
+            } else if is::reserved_function(&ob) {
+                ast = reserved_functions::reserved(&mut cs, ast, ob);
+                break;
 
             // 変数
             } else {
@@ -122,6 +85,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
     ast
 }
 
+// 同一の種類の文字で構成されていなくなるまで読み込む
 fn make_name(cs: &mut Peekable<Chars>, is: &Fn(&char)->bool) -> String {
     let mut name = String::new();
     while is::is_this(cs, &is) {

@@ -90,25 +90,6 @@ fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
         match fun.as_str() {
             "p"  => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
             "if" => f_if(tree, vvs),
-                /*
-                match evaluate(Tree::extract_option(tree.left), vvs) {
-                    Type::Bool(true) =>
-                        if let Some(x) = tree.right {
-                            evaluate(Tree::extract_option(x.clone().left), vvs);
-                            evaluate(Tree::extract_option(x.right), vvs)
-                        } else {
-                            panic!("this tree.right shoud be exsist");
-                        },
-                    Type::Bool(false) =>
-                        if let Some(x) = tree.right {
-                            Type::Nil
-                            //evaluate(Tree::extract_option(x.right), vvs)
-                        } else {
-                            panic!("this tree.right shoud be exsist");
-                        },
-                    _ => panic!("not condition"),
-                },
-                */
             _ => panic!("this function is not supproted"),
         }
     } else {
@@ -224,13 +205,6 @@ fn f_if(tree: Tree, vvs: &mut HashMap<String, Type>)  -> Type {
                 },
             y => panic!("Op {:?} is not supported", y),
         }
-        /*
-        match evaluate(Tree::extract_option(tree.left), vvs) {
-            Type::Bool(true) => evaluate(*t, vvs),
-            Type::Bool(false) => return Type::Nil,
-            _ => panic!("not condition"),
-        }
-        */
     } else {
         panic!("this tree.right shoud be exsist");
 

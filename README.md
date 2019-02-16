@@ -31,6 +31,7 @@ A Ruby Interpreter written in Rust 🦄
 | :---: | :---:|
 | print文 | p() |
 | if文 | if ~ end |
+| while文 | while ~ end |
 
 
 ## 記述例
@@ -48,6 +49,14 @@ if y < 1
 end
 
 p(y % 6)
+
+x = 0
+if x < 0
+else
+  while x < 10
+    p(x)
+  end
+end
 ```
 
 ## 開発指針

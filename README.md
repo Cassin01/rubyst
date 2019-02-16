@@ -2,6 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Ruby Interpreter written in Rust 🦄
+
 ## 対応している文法
 
 |型||

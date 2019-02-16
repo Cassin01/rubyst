@@ -19,25 +19,18 @@ pub fn eat_condition(cs: &mut Peekable<Chars>) -> String {
     condition
 }
 
-pub fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
+pub fn in_while(cs: &mut Peekable<Chars>, called_times: &mut i64) -> String {
     let mut closure = String::new();
     let mut word = String::new();
-
     loop {
-        if is::is_this(cs, &is::is_space) {
-            if word == String::from("if") {
-                *if_num += 1;
+        if is::is_this(cs, &is::is_space) ||
+            is:: is_this(cs, &is::is_new_line) {
+            if word == String::from("while") {
+                *called_times += 1;
                 eat_and_flesh(cs, &mut closure, &mut word);
             } else if word == String::from("end") {
-                *if_num -= 1;
-                if *if_num == 0 {
-                    cs.next();
-                    return closure
-                } else {
-                    eat_and_flesh(cs, &mut closure, &mut word);
-                }
-            } else if word == String::from("else") {
-                if *if_num == 1 {
+                *called_times -= 1;
+                if *called_times == 0 {
                     cs.next();
                     return closure
                 } else {
@@ -46,8 +39,37 @@ pub fn eat_in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
             } else {
                 eat_and_flesh(cs, &mut closure, &mut word);
             }
-        } else if is::is_this(cs, &is::is_new_line) {
-            if word == String::from("end") {
+        } else {
+            if let Some(c) = cs.next() {
+                word.push(c);
+            } else {
+                if word == String::from("end") {
+                    *called_times -= 1;
+                    if *called_times == 0 {
+                        cs.next();
+                        return closure
+                    } else {
+                        panic!("code was end without 'end' idnetifer");
+                    }
+                } else {
+                    panic!("code was end without 'end' idnetifer");
+                }
+            }
+        }
+
+    }
+}
+
+pub fn in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
+    let mut closure = String::new();
+    let mut word = String::new();
+
+    loop {
+        if is::is_this(cs, &is::is_space) || is::is_this(cs, &is::is_new_line){
+            if word == String::from("if") {
+                *if_num += 1;
+                eat_and_flesh(cs, &mut closure, &mut word);
+            } else if word == String::from("end") {
                 *if_num -= 1;
                 if *if_num == 0 {
                     cs.next();

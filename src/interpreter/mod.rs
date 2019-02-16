@@ -88,8 +88,9 @@ fn adapt_func_stmt(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
 fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
     if let Op::Fun(fun) = tree.root.clone() {
         match fun.as_str() {
-            "p"  => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
-            "if" => f_if(tree, vvs),
+            "p"     => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
+            "if"    => f_if(tree, vvs),
+            "while" => f_while(tree, vvs),
             _ => panic!("this function is not supproted"),
         }
     } else {
@@ -208,5 +209,22 @@ fn f_if(tree: Tree, vvs: &mut HashMap<String, Type>)  -> Type {
     } else {
         panic!("this tree.right shoud be exsist");
 
+    }
+}
+
+fn f_while(tree: Tree, vvs: &mut HashMap<String, Type>)  -> Type {
+    if let Some(t) = tree.right {
+        match t.root {
+            Op::STMT | Op::Nil =>
+                {
+                    while evaluate(Tree::extract_option(tree.left.clone()), vvs) == Type::Bool(true) {
+                        evaluate(*t.clone(), vvs);
+                    }
+                    return Type::Nil
+                },
+            y => panic!("Op {:?} is not supported", y),
+        }
+    } else {
+        panic!("this tree.right shoud be exsist");
     }
 }

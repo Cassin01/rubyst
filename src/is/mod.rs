@@ -110,8 +110,9 @@ pub fn is_operator_assign(s: &String) -> bool {
 
 pub fn reserved_function(s: &String) -> bool {
     match s.as_str() {
-        "if" => true,
-        _    => false,
+        "if"    => true,
+        "while" => true,
+        _       => false,
     }
 }
 

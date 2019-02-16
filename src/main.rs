@@ -1,5 +1,7 @@
 mod tree;
 mod is;
+
+#[allow(dead_code)]
 mod interpreter;
 mod read_code;
 mod parser;
@@ -11,7 +13,7 @@ fn main() {
     interpreter::interpret(ast);
 }
 
-/*
+#[allow(dead_code)]
 fn read_tree(tree: &tree::Tree, u: usize, indent: usize, lr: String) {
     println!("{}{} {:?}", " ".repeat(u) ,lr, tree.root);
     if let Some(ref x) = tree.left {
@@ -21,4 +23,3 @@ fn read_tree(tree: &tree::Tree, u: usize, indent: usize, lr: String) {
         read_tree(x, u + indent, indent, String::from("R"));
     }
 }
-*/

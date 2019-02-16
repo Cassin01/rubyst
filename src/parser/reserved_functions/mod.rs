@@ -20,11 +20,25 @@ pub fn reserved(cs: &mut Peekable<Chars>, ast: Tree, ob: String) -> Tree {
 }
 
 #[allow(dead_code, unused_variables)]
-fn reserved_while(cs: &mut Peekable<Chars>, ast: Tree, ob: String) -> Tree {
+fn reserved_while(cs: &mut Peekable<Chars>, mut ast: Tree, ob: String) -> Tree {
     let condition = eat::eat_condition(cs);
     let mut while_num = 1;
     let in_while = eat::in_while(cs, &mut while_num);
-    ast
+
+    if ast.root == Op::Nil {
+        if ast.left == None {
+            ast = ast.root(Op::Fun(ob))
+                    .left(parser(condition.chars().peekable()))
+                    .right(parser(in_while.chars().peekable()));
+            // if 終了後改行が呼ばれないのでここで呼ぶ
+            ast = push::push_stmt(ast, parser(cs.clone()));
+            ast
+        } else {
+            panic!("if can't return value ");
+        }
+    } else {
+        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+    }
 }
 
 fn reserved_if(cs: &mut Peekable<Chars>, mut ast: Tree, ob: String) -> Tree {

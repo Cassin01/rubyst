@@ -25,7 +25,7 @@ pub fn in_while(cs: &mut Peekable<Chars>, called_times: &mut i64) -> String {
     loop {
         if is::is_this(cs, &is::is_space) ||
             is:: is_this(cs, &is::is_new_line) {
-            if word == String::from("while") {
+            if word == String::from("if") || word == String::from("while") {
                 *called_times += 1;
                 eat_and_flesh(cs, &mut closure, &mut word);
             } else if word == String::from("end") {
@@ -66,7 +66,7 @@ pub fn in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
 
     loop {
         if is::is_this(cs, &is::is_space) || is::is_this(cs, &is::is_new_line){
-            if word == String::from("if") {
+            if word == String::from("if") || word == String::from("while") {
                 *if_num += 1;
                 eat_and_flesh(cs, &mut closure, &mut word);
             } else if word == String::from("end") {

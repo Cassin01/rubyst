@@ -1,5 +1,5 @@
-p()
-p()
-p()
-p()
-p(1)
+i = 10
+begin
+    p(i)
+    i = i - 1
+end while i > 0

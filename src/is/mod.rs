@@ -36,6 +36,7 @@ pub fn is_operator(c: &char) -> bool {
         '/' => true,
         '%' => true,
         '+' => true,
+        '-' => true,
         '=' => true,
         '!' => true,
         '>' => true,
@@ -112,6 +113,7 @@ pub fn reserved_function(s: &String) -> bool {
     match s.as_str() {
         "if"    => true,
         "while" => true,
+        "begin" => true,
         _       => false,
     }
 }
@@ -126,6 +128,13 @@ pub fn reserved_if(s: &String) -> bool {
 pub fn reserved_while(s: &String) -> bool {
     match s.as_str() {
         "while" => true,
+        _       => false,
+    }
+}
+
+pub fn reserved_begin(s: &String) -> bool {
+    match s.as_str() {
+        "begin" => true,
         _       => false,
     }
 }

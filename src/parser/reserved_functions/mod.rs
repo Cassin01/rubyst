@@ -15,15 +15,58 @@ pub fn reserved(cs: &mut Peekable<Chars>, ast: Tree, ob: String) -> Tree {
     match ob {
         ref ob if is::reserved_while(&ob) => reserved_while(cs, ast, ob.to_string()),
         ref ob if is::reserved_if(&ob)    => reserved_if(cs, ast, ob.to_string()),
+        ref ob if is::reserved_begin(&ob) => reserved_begin(cs, ast, ob.to_string()),
         _ => panic!("reserved funciton '{}' is not suported"),
     }
 }
 
-#[allow(dead_code, unused_variables)]
+
+fn reserved_begin(cs: &mut Peekable<Chars>, mut ast: Tree, ob: String) -> Tree {
+    let in_while = eat::in_while(cs);
+    let mut word = String::new();
+    loop {
+        if is::is_this(cs, &is::is_new_line) || is::is_this(cs, &is::is_space){
+            if let Some(_) = cs.next() {
+                if !word.is_empty() {
+                    if word == String::from("while") {
+                        break;
+                    } else {
+                        panic!("should be 'while' but '{}' (No While Err)", word);
+                    }
+                }
+            } else {
+                panic!("begin was called but code was end without calling 'while' (No While Err)");
+            }
+        }
+        else if is::is_this(cs, &is::is_alphabet){
+            if let Some(x) = cs.next() {
+                word.push(x);
+            } else {
+                panic!("begin was called but code was end without calling 'while' (No While Err)");
+            }
+        }
+    }
+    let condition = eat::eat_condition(cs);
+
+    if ast.root == Op::Nil {
+        if ast.left == None {
+            ast = ast.root(Op::Fun(ob))
+                    .left(parser(condition.chars().peekable()))
+                    .right(parser(in_while.chars().peekable()));
+            // if 終了後改行が呼ばれないのでここで呼ぶ
+            ast = push::push_stmt(ast, parser(cs.clone()));
+            ast
+        } else {
+            panic!("if can't return value ");
+        }
+    } else {
+        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+    }
+}
+
 fn reserved_while(cs: &mut Peekable<Chars>, mut ast: Tree, ob: String) -> Tree {
     let condition = eat::eat_condition(cs);
-    let mut while_num = 1;
-    let in_while = eat::in_while(cs, &mut while_num);
+    let in_while = eat::in_while(cs);
 
     if ast.root == Op::Nil {
         if ast.left == None {

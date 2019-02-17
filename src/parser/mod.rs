@@ -12,6 +12,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
     let mut ast = Tree::new(Op::Nil);
 
     loop {
+        println!("{:?}", cs.peek());
         match cs.peek() {
             Some(_) => (),
             None => break,

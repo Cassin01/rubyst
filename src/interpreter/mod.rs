@@ -7,6 +7,7 @@ mod functions;
 pub enum Type {
     Int(i64),
     Bool(bool),
+    Str(String),
     Val(String),
     Nil,
 }
@@ -48,6 +49,7 @@ fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
     match t {
         Type::Int(x)  => println!("{}", x),
         Type::Bool(x) => println!("{}", x),
+        Type::Str(x)  => println!("{}", x),
         Type::Val(x)  => return p(vvs[&x].clone(), vvs),
         Type::Nil   => (),
     }
@@ -91,6 +93,14 @@ fn adapt_funcf(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
             "p"     => p(evaluate(Tree::extract_option(tree.left), vvs), vvs),
             "if"    => f_if(tree, vvs),
             "while" => f_while(tree, vvs),
+            "begin" => {
+                if let Some(t) = tree.clone().right {
+                    evaluate(*t, vvs);
+                    f_while(tree, vvs)
+                } else {
+                    panic!("right should be exist");
+                }
+            },
             _ => panic!("this function is not supproted"),
         }
     } else {

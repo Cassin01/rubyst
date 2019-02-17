@@ -53,7 +53,7 @@ fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
         Type::Val(x)  => return p(vvs[&x].clone(), vvs),
         Type::Nil   => (),
     }
-    Type::Nil
+    t
 }
 
 fn adapt_func_nil(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {

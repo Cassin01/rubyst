@@ -12,6 +12,11 @@ def evaluate(tree, env)
       while evaluate(tree[1], env)
         evaluate(tree[2], env)
       end
+  when "while2"
+      evaluate(tree[2], env)
+      while evaluate(tree[1], env)
+        evaluate(tree[2], env)
+      end
   when "lit"
     tree[1]
   when "+"
@@ -51,5 +56,5 @@ str = minruby_load()
 tree = minruby_parse(str)
 pp(tree)
 
-#env = {}
-#answer = evaluate(tree, env)
+env = {}
+answer = evaluate(tree, env)

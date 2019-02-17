@@ -12,7 +12,6 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
     let mut ast = Tree::new(Op::Nil);
 
     loop {
-        println!("{:?}", cs.peek());
         match cs.peek() {
             Some(_) => (),
             None => break,
@@ -27,7 +26,7 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
         // 数字
         else if is::is_this(&mut cs, &is::is_num) {
-            ast = push::push_nv(ast, Op::Lit(make_name(&mut cs, &is::is_num).clone()));
+            ast = push::push_nv(ast, Op::Num(make_name(&mut cs, &is::is_num).clone()));
         }
 
         // スペース
@@ -61,6 +60,11 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
         // 括弧
         else if is::is_this(&mut cs, &is::is_first_bracket) {
             ast = push::push_tree(ast, parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+        }
+
+        // 文字列
+        else if is::is_this(&mut cs, &is::is_quotation) {
+            ast = push::push_tree(ast, Tree::new(Op::Str(eat::in_quotation(&mut cs))));
         }
 
         // 関数, 変数

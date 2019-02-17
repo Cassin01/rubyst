@@ -154,3 +154,18 @@ pub fn eat_codes_in_bracket(cs: &mut Peekable<Chars>) -> String {
     cs.next();
     code_in_brackets
 }
+
+pub fn in_quotation(cs: &mut Peekable<Chars>) -> String {
+    let mut code_in_brackets = String::new();
+    cs.next();
+    loop {
+        if is::is_this(cs, &is::is_quotation) {
+            cs.next();
+            return code_in_brackets;
+        } else if let Some(c) = cs.next() {
+            code_in_brackets.push(c);
+        } else {
+            panic!("code end without '\"'");
+        }
+    }
+}

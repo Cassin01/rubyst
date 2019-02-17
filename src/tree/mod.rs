@@ -19,7 +19,8 @@ pub enum Op<T> {
     Asi,    // Assignment operator
     Fun(T),
     ROp(T), // Relational operator
-    Lit(T),
+    Num(T), // Num
+    Str(T), // String
     Val(T),
     STMT, // statement
 }

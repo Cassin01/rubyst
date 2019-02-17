@@ -29,7 +29,8 @@ pub fn interpret(tree: Tree) -> Type {
 
 fn evaluate(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
     match tree.root {
-        Op::Lit(x)  => Type::Int(x.parse().unwrap()),
+        Op::Num(x)  => Type::Int(x.parse().unwrap()),
+        Op::Str(x)  => Type::Str(x),
         Op::Add     => adapt_funci(tree, &functions::add, vvs),
         Op::Neg     => adapt_funci(tree, &functions::neg, vvs),
         Op::Mul     => adapt_funci(tree, &functions::mul, vvs),
@@ -46,7 +47,7 @@ fn evaluate(tree: Tree, vvs: &mut HashMap<String, Type>) -> Type {
 }
 
 fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
-    match t {
+    match t.clone() {
         Type::Int(x)  => println!("{}", x),
         Type::Bool(x) => println!("{}", x),
         Type::Str(x)  => println!("{}", x),

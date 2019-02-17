@@ -22,7 +22,7 @@ pub fn push_op_asi(tree: Tree, op: Op<String>) -> Tree {
             Op::Asi => Tree::new(tree.root)
                             .left(tree.left)
                             .right(Tree::new(Op::Asi).left(tree.right)),
-            Op::Val(_) | Op::Lit(_)
+            Op::Val(_) | Op::Num(_)
                     => panic!("not operator"),
             _       => Tree::new(Op::Asi).left(tree)
         }
@@ -37,7 +37,7 @@ pub fn push_op_eqls(tree: Tree, op: String) -> Tree {
         Op::Asi => Tree::new(tree.root)
                         .left(tree.left)
                         .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
-        Op::Val(_) | Op::Lit(_)
+        Op::Val(_) | Op::Num(_)
                 => panic!("not operator"),
         _       => Tree::new(Tree::enum_op(op))
                         .left(tree)
@@ -54,7 +54,7 @@ pub fn push_op_sums(tree: Tree, op: String)
                     .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
         Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(Tree::enum_op(op)).left(tree),
-        Op::Val(_) | Op::Lit(_) => panic!("not operator"),
+        Op::Val(_) | Op::Num(_) | Op::Str(_) => panic!("not operator"),
     }
 }
 
@@ -69,7 +69,7 @@ pub fn push_op_products(tree: Tree, op: String)
                     .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
         Op::Mul | Op::Div | Op::Rem | Op::Pow
             => Tree::new(Tree::enum_op(op)).left(tree),
-        Op::Val(_) | Op::Lit(_)
+        Op::Val(_) | Op::Num(_) | Op::Str(_)
             => panic!("not operator"),
     }
 }
@@ -87,7 +87,7 @@ pub fn push_op_pows(tree: Tree, op: String)
             Op::Pow
                 => Tree::new(Tree::enum_op(op))
                         .left(tree),
-            Op::Val(_) | Op::Lit(_)
+            Op::Val(_) | Op::Num(_) | Op::Str(_)
                 => panic!("not operator"),
         }
 }

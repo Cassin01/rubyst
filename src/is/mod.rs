@@ -138,3 +138,10 @@ pub fn reserved_begin(s: &String) -> bool {
         _       => false,
     }
 }
+
+pub fn is_quotation(c: &char) -> bool {
+    match c {
+        '"' => true,
+        _   => false,
+    }
+}

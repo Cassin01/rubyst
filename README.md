@@ -27,11 +27,38 @@ A Ruby Interpreter written in Rust 🦄
 |大なり|>|
 |小なり|<|
 
-|関数||
-| :---: | :---:|
-| print文 | p() |
-| if文 | if ~ end |
-| while文 | while ~ end |
+### 関数
+#### if
+
+```ruby
+i = 10
+if i == 10
+  i = i + 1
+else
+  i = i - 1
+end
+p(i)
+```
+
+#### while
+
+```ruby
+i = 10
+while i > 0
+  p(i)
+  i = i - 1
+end
+```
+
+#### begin
+
+```ruby
+i = 10
+begin
+  p(i)
+  i = i - 1
+end while i > 0
+```
 
 
 ## 記述例

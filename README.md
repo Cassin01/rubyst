@@ -5,10 +5,12 @@ A Ruby Interpreter written in Rust 🦄
 
 ## 対応している文法
 
-|型||
+| Type ||
 | :---:  | :---:|
 | bool型 | Bool | 
 | int型  | Int  |
+| String| Str |
+
 
 |演算子||
 | :---:  | :---:|
@@ -27,7 +29,13 @@ A Ruby Interpreter written in Rust 🦄
 |大なり|>|
 |小なり|<|
 
-### 関数
+### Functions
+#### p
+
+```ruby
+p("Hello World!")
+```
+
 #### if
 
 ```ruby

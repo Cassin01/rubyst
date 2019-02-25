@@ -8,6 +8,7 @@ use std::iter::Peekable;
 use std::str::Chars;
 
 pub fn parser(mut cs: Peekable<Chars>) -> Tree {
+    println!("{:?}", cs.peek());
     // Abstract syntax tree
     let mut ast = Tree::new(Op::Nil);
 
@@ -74,7 +75,8 @@ pub fn parser(mut cs: Peekable<Chars>) -> Tree {
 
             // 関数
             if is::is_this(&mut cs, &is::is_first_bracket) {
-                ast = push::push_fun(ast, ob, parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
+                ast = push::push_fun(ast, ob,
+                    parser(eat::eat_codes_in_bracket(&mut cs).clone().chars().peekable()));
 
             // 予約語
             } else if is::reserved_function(&ob) {

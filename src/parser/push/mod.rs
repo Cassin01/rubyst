@@ -52,11 +52,13 @@ pub fn push_op_sums(tree: Tree, op: String)
     -> Tree {
     match tree.root {
         Op::Nil => tree.root(Tree::enum_op(op)),
-        Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) =>
+        //Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) =>
+        Op::Asi | Op::STMT | Op::ROp(_) =>
                     Tree::new(tree.root)
                     .left(tree.left)
                     .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
-        Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
+        //Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
+        Op::Fun(_) | Op::Add | Op::Neg | Op::Mul | Op::Div | Op::Rem | Op::Pow =>
             Tree::new(Tree::enum_op(op)).left(tree),
         Op::Val(_) | Op::Num(_) | Op::Str(_) => panic!("not operator"),
     }
@@ -67,11 +69,13 @@ pub fn push_op_products(tree: Tree, op: String)
     match tree.root {
         Op::Nil
             => tree.root(Tree::enum_op(op)),
-        Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg
+        //Op::Asi | Op::STMT | Op::Fun(_) | Op::ROp(_) | Op::Add | Op::Neg
+        Op::Asi | Op::STMT | Op::ROp(_) | Op::Add | Op::Neg
             => Tree::new(tree.root)
                     .left(tree.left)
                     .right(Tree::new(Tree::enum_op(op)).left(tree.right)),
-        Op::Mul | Op::Div | Op::Rem | Op::Pow
+        //Op::Mul | Op::Div | Op::Rem | Op::Pow
+        Op::Mul | Op::Div | Op::Rem | Op::Pow | Op::Fun(_)
             => Tree::new(Tree::enum_op(op)).left(tree),
         Op::Val(_) | Op::Num(_) | Op::Str(_)
             => panic!("not operator"),

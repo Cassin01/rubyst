@@ -104,42 +104,44 @@ fn reserved_case(cs: &mut Peekable<Chars>, mut ast: Tree) -> Tree {
         let condition = left.clone() + " " + "==" + " " + &right;
         let closure = eat_till_when(cs, &mut times);
         match times {
-            0 =>    if ast.root == Op::Nil {
-                        if ast.left == None {
-                            ast = ast.root(Op::Fun("if".to_string()))
-                                    .left(parser(condition.chars().peekable()))
-                                    .right(parser(closure.chars().peekable()));
-                            // 改行
-                            ast = push::push_stmt_left(ast);
-                            ast.push_back(Op::Nil);
-                            return ast
-                        } else {
-                            panic!("if can't return value ");
-                        }
-                    } else if ast.root == Op::STMT {
-                        let insert_tree = push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(parser(closure.chars().peekable())));
-                            ast = push::push_tree(ast, insert_tree);
-                            ast.push_back(Op::Nil);
-                            return ast
+            0 =>
+                if ast.root == Op::Nil {
+                    if ast.left == None {
+                        ast = ast.root(Op::Fun("if".to_string()))
+                                .left(parser(condition.chars().peekable()))
+                                .right(parser(closure.chars().peekable()));
+                        // 改行
+                        ast = push::push_stmt_left(ast);
+                        ast.push_back(Op::Nil);
+                        return ast
                     } else {
-                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
-                    },
-            1 =>    if ast.root == Op::Nil {
-                        if ast.left == None {
-                            ast = ast.root(Op::Fun("if".to_string()))
-                                    .left(parser(condition.chars().peekable()))
-                                    .right(parser(closure.chars().peekable()));
-                            // 改行
-                            ast = push::push_stmt_left(ast);
-                        } else {
-                            panic!("if can't return value ");
-                        }
-                    } else if ast.root == Op::STMT {
-                        let insert_tree = push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(parser(closure.chars().peekable())));
-                            ast = push::push_tree(ast, insert_tree);
+                        panic!("if can't return value ");
+                    }
+                } else if ast.root == Op::STMT {
+                    let insert_tree = push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(parser(closure.chars().peekable())));
+                        ast = push::push_tree(ast, insert_tree);
+                        ast.push_back(Op::Nil);
+                        return ast
+                } else {
+                    panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                },
+            1 =>
+                if ast.root == Op::Nil {
+                    if ast.left == None {
+                        ast = ast.root(Op::Fun("if".to_string()))
+                                .left(parser(condition.chars().peekable()))
+                                .right(parser(closure.chars().peekable()));
+                        // 改行
+                        ast = push::push_stmt_left(ast);
                     } else {
-                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
-                    },
+                        panic!("if can't return value ");
+                    }
+                } else if ast.root == Op::STMT {
+                    let insert_tree = push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(parser(closure.chars().peekable())));
+                        ast = push::push_tree(ast, insert_tree);
+                } else {
+                    panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                },
             _  => {
                 panic!("'{}' is not supproted in this time");
             }

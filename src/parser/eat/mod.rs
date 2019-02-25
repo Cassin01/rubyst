@@ -18,24 +18,30 @@ pub fn eat_condition(cs: &mut Peekable<Chars>) -> String {
     }
 }
 
-
 pub fn in_while(cs: &mut Peekable<Chars>) -> String {
     let mut closure = String::new();
     let mut word = String::new();
     let mut called_times = 1;
     let mut begin_times = 0;
     loop {
+        // if peek space or new line
         if is::is_this(cs, &is::is_space) ||
             is:: is_this(cs, &is::is_new_line) {
-            if word == String::from("if") || word == String::from("while") || word == String::from("begin") {
+            if is::in_closure(&word) {
+                called_times += 1;
+
+                // begin ~ while
+                if word == String::from("begin") {
+                    begin_times += 1;
+                }
                 if word == String::from("while") && begin_times > 0 {
                     begin_times -= 1;
                     called_times -= 1;
-                } else if word == String::from("begin") {
-                    begin_times += 1;
                 }
-                called_times += 1;
+
+                // word -> closure
                 eat_and_flesh(cs, &mut closure, &mut word);
+
             } else if word == String::from("end") {
                 called_times -= 1;
                 if called_times == 0 {
@@ -75,7 +81,7 @@ pub fn in_if(cs: &mut Peekable<Chars>, if_num: &mut i64) -> String {
 
     loop {
         if is::is_this(cs, &is::is_space) || is::is_this(cs, &is::is_new_line){
-            if word == String::from("if") || word == String::from("while") || word == String::from("begin") {
+            if is::in_closure(&word) {
                 if word == String::from("while") && begin_times > 0 {
                     begin_times -= 1;
                     *if_num -= 1;

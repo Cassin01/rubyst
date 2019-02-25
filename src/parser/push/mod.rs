@@ -7,6 +7,10 @@ pub fn push_stmt(tree: Tree, insert_tree: Tree) -> Tree {
     Tree::new(Op::STMT).left(tree).right(insert_tree)
 }
 
+pub fn push_stmt_left(tree: Tree) -> Tree {
+    Tree::new(Op::STMT).left(tree)
+}
+
 pub fn push_fun(tree: Tree, fnc: String, insert_tree: Tree) -> Tree {
     if tree.root == Op::Nil {
         tree.root(Op::Fun(fnc)).left(insert_tree)

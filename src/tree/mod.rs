@@ -22,7 +22,7 @@ pub enum Op<T> {
     Num(T), // Num
     Str(T), // String
     Val(T),
-    STMT, // statement
+    STMT,   // Statement
 }
 
 pub trait TreeInsert<T> {

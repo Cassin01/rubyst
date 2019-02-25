@@ -52,7 +52,7 @@ fn p(t: Type, vvs: &HashMap<String, Type>) -> Type {
         Type::Bool(x) => println!("{}", x),
         Type::Str(x)  => println!("{}", x),
         Type::Val(x)  => return p(vvs[&x].clone(), vvs),
-        Type::Nil   => (),
+        Type::Nil     => (),
     }
     t
 }

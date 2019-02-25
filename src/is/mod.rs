@@ -66,6 +66,13 @@ pub fn is_new_line(c: &char) -> bool {
     }
 }
 
+pub fn is_quotation(c: &char) -> bool {
+    match c {
+        '"' => true,
+        _   => false,
+    }
+}
+
 pub fn is_operator_sums(s: &String) -> bool {
     match s.as_str() {
         "+" => true,
@@ -114,6 +121,7 @@ pub fn reserved_function(s: &String) -> bool {
         "if"    => true,
         "while" => true,
         "begin" => true,
+        "case"  => true,
         _       => false,
     }
 }
@@ -139,9 +147,16 @@ pub fn reserved_begin(s: &String) -> bool {
     }
 }
 
-pub fn is_quotation(c: &char) -> bool {
-    match c {
-        '"' => true,
-        _   => false,
+pub fn reserved_case(s: &String) -> bool {
+    match s.as_str() {
+        "case" => true,
+        _      => false,
+    }
+}
+
+pub fn in_closure(s: &String) -> bool {
+    match s.as_str() {
+        "case" | "while" | "begin" | "if" => true,
+        _ => false,
     }
 }

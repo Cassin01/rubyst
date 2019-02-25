@@ -1,7 +1,6 @@
-i = 10
-if i == 10
-    begin
-        p(i)
-        i = i - 1
-    end while i > 0
+if 1 == 0
+    p(0)
+end
+if 1 == 1
+    p(1)
 end

@@ -74,11 +74,13 @@ end while i > 0
 i = 1
 case i
   when 0
-    p(0)
+    p("zero")
   when 1
-    p(1)
+    p("one")
   when 2
-    p(2)
+    p("two")
+  else
+    p("others")
 end
 ```
 

@@ -93,18 +93,25 @@ fn reserved_if(cs: &mut Peekable<Chars>, ast: Tree, ob: String) -> Tree {
 fn reserved_case(cs: &mut Peekable<Chars>, mut ast: Tree) -> Tree {
     let left = eat::eat_condition(cs);
     let mut times = 1; // 0 -> end, 1 -> when
-    let _ = eat_till_when(cs, &mut times);
-    match times {
-        0 => return ast,
-        1 => (),
+
+    let mut word = String::new();
+    let _ = eat_till_when(cs, &mut times, &mut word);
+    let mut right;
+    let mut condition;
+    match word.as_str() {
+        "end" => return ast,
+        "when" => {
+            // 次の条件文読み込み
+            right = eat::eat_condition(cs);
+            condition = left.clone() + " " + "==" + " " + &right;
+        },
         other  => panic!("'{}' is not supproted in this time", other),
     }
     loop {
-        let right = eat::eat_condition(cs);
-        let condition = left.clone() + " " + "==" + " " + &right;
-        let closure = eat_till_when(cs, &mut times);
-        match times {
-            0 =>
+        let mut word = String::new();
+        let closure = eat_till_when(cs, &mut times, &mut word);
+        match word.as_str() {
+            "end" =>
                 if ast.root == Op::Nil {
                     if ast.left == None {
                         ast = ast.root(Op::Fun("if".to_string()))
@@ -125,7 +132,7 @@ fn reserved_case(cs: &mut Peekable<Chars>, mut ast: Tree) -> Tree {
                 } else {
                     panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
                 },
-            1 =>
+            "when" => {
                 if ast.root == Op::Nil {
                     if ast.left == None {
                         ast = ast.root(Op::Fun("if".to_string()))
@@ -133,25 +140,62 @@ fn reserved_case(cs: &mut Peekable<Chars>, mut ast: Tree) -> Tree {
                                 .right(parser(closure.chars().peekable()));
                         // 改行
                         ast = push::push_stmt_left(ast);
+
+                        // 次の条件文読み込み
+                        right = eat::eat_condition(cs);
+                        condition = left.clone() + " " + "==" + " " + &right;
+
                     } else {
                         panic!("if can't return value ");
                     }
                 } else if ast.root == Op::STMT {
                     let insert_tree = push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(parser(closure.chars().peekable())));
                         ast = push::push_tree(ast, insert_tree);
+
+                        // 次の条件文読み込み
+                        right = eat::eat_condition(cs);
+                        condition = left.clone() + " " + "==" + " " + &right;
                 } else {
                     panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                }
+            }
+            "else" =>
+                {
+                    word.clear();
+                    let in_else  = eat_till_when(cs, &mut times, &mut word);
+                    let else_tree = Tree::new(Op::Fun("else".to_string())).left(parser(closure.chars().peekable())).right(parser(in_else.chars().peekable()));
+                    if ast.root == Op::Nil {
+                        if ast.left == None {
+                            ast = ast.root(Op::Fun("if".to_string()))
+                                    .left(parser(condition.chars().peekable()))
+                                    .right(else_tree);
+                            // 改行
+                            ast = push::push_stmt_left(ast);
+                            ast.push_back(Op::Nil);
+                            return ast
+                        } else {
+                            panic!("if can't return value ");
+                        }
+                    } else if ast.root == Op::STMT {
+                        let insert_tree =
+                            push::push_stmt_left(Tree::new(Op::Fun("if".to_string())).left(parser(condition.chars().peekable())).right(else_tree));
+                        ast = push::push_tree(ast, insert_tree);
+                        ast.push_back(Op::Nil);
+                        return ast
+                    } else {
+                        panic!("undefined medthod tree.root for {:?} (NoMethodError)", ast.root);
+                    }
                 },
             _  => {
                 panic!("'{}' is not supproted in this time");
             }
+
         }
     }
 }
 
-fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64) -> String {
+fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64, word: &mut String) -> String {
     let mut closure = String::new();
-    let mut word = String::new();
     let mut begin_times = 0;
     loop {
         if is::is_this(cs, &is::is_new_line) || is::is_this(cs, &is::is_space) {
@@ -162,14 +206,14 @@ fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64) -> String {
                         *times += 1;
 
                         // begin ~ while
-                        if word == String::from("begin") {
+                        if word == &String::from("begin") {
                             begin_times += 1;
                         }
-                        if word == String::from("while") && begin_times > 0 {
+                        if word == &String::from("while") && begin_times > 0 {
                             begin_times -= 1;
                             *times -= 1;
                         }
-                    } else if word == String::from("end") {
+                    } else if word == &String::from("end") {
                         *times -= 1;
                         if times == &0 {
                             return closure
@@ -178,7 +222,7 @@ fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64) -> String {
                             closure.push_str(word.as_str());
                             word.clear();
                         }
-                    } else if word == String::from("when") {
+                    } else if word == &String::from("when") {
                         if times == &1 {
                             return closure
                         } else {
@@ -186,6 +230,15 @@ fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64) -> String {
                             closure.push_str(word.as_str());
                             word.clear();
                         }
+                    } else if word == &String::from("else") {
+                        if times == &1 {
+                            return closure
+                        } else {
+                            word.push(x);
+                            closure.push_str(word.as_str());
+                            word.clear();
+                        }
+
                     } else {
                         word.push(x);
                         closure.push_str(word.as_str());
@@ -204,7 +257,7 @@ fn eat_till_when(cs: &mut Peekable<Chars>, times: &mut i64) -> String {
             if let Some(x) = cs.next() {
                 word.push(x);
             } else {
-                if word == String::from("end") {
+                if word == &String::from("end") {
                     *times -= 1;
                     if times == &0 {
                         return closure

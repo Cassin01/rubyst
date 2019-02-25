@@ -8,7 +8,6 @@ use std::iter::Peekable;
 use std::str::Chars;
 
 pub fn parser(mut cs: Peekable<Chars>) -> Tree {
-    println!("{:?}", cs.peek());
     // Abstract syntax tree
     let mut ast = Tree::new(Op::Nil);
 

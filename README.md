@@ -68,6 +68,19 @@ begin
 end while i > 0
 ```
 
+#### case
+
+```ruby
+i = 1
+case i
+  when 0
+    p(0)
+  when 1
+    p(1)
+  when 2
+    p(2)
+end
+```
 
 ## 開発指針
 コードはできるだけ綺麗にするけど開発の速さのためには妥協もする
